@@ -4,6 +4,23 @@ import "strings"
 
 type Code int
 
+func init() {
+	// Add Aliases
+	nameToCode["["] = LeftBracket
+	nameToCode["]"] = RightBracket
+	nameToCode["\\"] = Backslash
+	nameToCode[";"] = Semicolon
+	nameToCode[","] = Comma
+	nameToCode["/"] = Slash
+	nameToCode[" "] = SpaceBar
+	nameToCode["`"] = Grave
+	nameToCode["-"] = Minus
+	nameToCode["="] = Equal
+	nameToCode["'"] = Quote
+	nameToCode["."] = Dot
+	nameToCode["CMD"] = Super
+}
+
 func (k Code) Name() string {
 	return codeToName[k]
 }
