@@ -76,7 +76,7 @@ func update(state key.Table, pressed bool) {
 			comb.Callback()
 			continue
 		}
-		if comb.Option&AllowOtherInputs == 0 && comb.Combination.IsSubsetOf(state) {
+		if comb.Option&AllowOtherInputs == 1 && comb.Combination.IsSubsetOf(state) {
 			comb.Callback()
 			continue
 		}
