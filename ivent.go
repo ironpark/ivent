@@ -1,4 +1,4 @@
-package keyhook
+package ivent
 
 import (
 	"context"
