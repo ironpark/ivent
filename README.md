@@ -52,3 +52,10 @@ func main() {
 	ivent.Start(ctx)
 }
 ```
+
+## TODO
+- [ ] Generate key-code table `key/codes.go` using `go:generate`
+- [ ] Add alias for key codes (e.g. `RightBracket` -> `}`) 
+- [ ] Add Support mouse events
+- [ ] Implement key event triggering
+- [ ] Add support for Windows and Linux
