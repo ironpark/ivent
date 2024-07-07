@@ -99,3 +99,22 @@ func Register(comb ...*Comb) {
 		combinations = append(combinations, c)
 	}
 }
+
+// Reset clears the list of monitored combinations.
+func Reset() {
+	mu.Lock()
+	defer mu.Unlock()
+	combinations = nil
+}
+
+// Remove removes a specific combination from the list of monitored combinations.
+func Remove(comb *Comb) {
+	mu.Lock()
+	defer mu.Unlock()
+	for i, c := range combinations {
+		if c == comb {
+			combinations = append(combinations[:i], combinations[i+1:]...)
+			return
+		}
+	}
+}
