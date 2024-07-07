@@ -1,5 +1,7 @@
-Ivent
-========
+<p align="center">
+    <img src="./assets/images/ivent.png" width="256">
+</p>
+
 Simple input event hook library for golang
 
 ## Warning
