@@ -54,7 +54,9 @@ func main() {
 ```
 
 ## TODO
-- [ ] Generate key-code table `key/codes.go` using `go:generate`
+- [x] Generate key-code table `key/codes.go` using `go:generate`
+    - [ ] Alias Support
+    - [ ] Add windows,linux key-code config in `key/keycode.json` file
 - [ ] Add alias for key codes (e.g. `RightBracket` -> `}`) 
 - [ ] Add Support mouse events
 - [ ] Implement key event triggering
