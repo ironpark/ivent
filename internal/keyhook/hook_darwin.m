@@ -2,6 +2,7 @@
 #include <stdio.h>
 #import "hook_darwin.h"
 #include <pthread.h>
+#import <Cocoa/Cocoa.h>
 
 // Go 콜백 함수를 참조하기 위한 함수 포인터 타입
 // void keyEventGoCallback(pid_t pid, CGKeyCode keycode, bool down);
@@ -9,6 +10,14 @@
 static CFMachPortRef eventTap = NULL;
 static CFRunLoopSourceRef runLoopSource = NULL;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+static void checkEventTapStatus(CFRunLoopTimerRef timer, void *info) {
+    pthread_mutex_lock(&mutex);
+    if (eventTap && !CGEventTapIsEnabled(eventTap)) {
+        CGEventTapEnable(eventTap, true);
+    }
+    pthread_mutex_unlock(&mutex);
+}
 
 static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
     if (type == kCGEventKeyDown || type == kCGEventKeyUp || type == kCGEventFlagsChanged) {
@@ -23,22 +32,26 @@ static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType typ
     return event;
 }
 
-void start() {
-    pthread_mutex_lock(&mutex);
+int start() {
     if (eventTap == NULL) {
+        pthread_mutex_lock(&mutex);
         CGEventMask eventMask = (1 << kCGEventKeyDown) | (1 << kCGEventKeyUp) | (1 << kCGEventFlagsChanged);
         eventTap = CGEventTapCreate(kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionListenOnly, eventMask, keyEventCGEventCallback, NULL);
         if (!eventTap) {
-            fprintf(stderr, "Failed to create event tap\n");
             pthread_mutex_unlock(&mutex);
-            exit(1);
+            return -1;
         }
+        pthread_mutex_unlock(&mutex);
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
         CGEventTapEnable(eventTap, true);
+
+        // Add a timer to check the event tap status every 5 minutes
+        CFRunLoopTimerRef timer = CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + 300, 300, 0, 0, checkEventTapStatus, NULL);
+        CFRunLoopAddTimer(CFRunLoopGetMain(), timer, kCFRunLoopCommonModes);
+        CFRunLoopRun();
     }
-    pthread_mutex_unlock(&mutex);
-    CFRunLoopRun();
+    return 0;
 }
 
 void stop() {
@@ -50,7 +63,6 @@ void stop() {
         CFRelease(eventTap);
         runLoopSource = NULL;
         eventTap = NULL;
-        CFRunLoopStop(CFRunLoopGetCurrent());
     }
     pthread_mutex_unlock(&mutex);
 }

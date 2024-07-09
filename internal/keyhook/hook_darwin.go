@@ -7,9 +7,22 @@ package keyhook
 #include "hook_darwin.h"
 */
 import "C"
+import (
+	"context"
+	"fmt"
+	"runtime"
+)
 
-func Start() {
-	C.start()
+func start() {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	fmt.Println(C.start())
+}
+
+func Start(ctx context.Context) {
+	go start()
+	<-ctx.Done()
+	C.stop()
 }
 
 func Stop() {

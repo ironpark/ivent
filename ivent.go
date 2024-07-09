@@ -85,9 +85,7 @@ func update(state key.Table, pressed bool) {
 
 // Start begins listening for input events and runs until the context is done.
 func Start(ctx context.Context) {
-	go keyhook.Start()
-	<-ctx.Done()
-	keyhook.Stop()
+	keyhook.Start(ctx)
 }
 
 // Register registers new key combinations to be monitored.
