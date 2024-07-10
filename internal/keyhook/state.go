@@ -50,7 +50,7 @@ func (ks *KeyState) RemoveUpdateCallback(callback UpdateCallback) {
 }
 
 // SetKeyState sets the state of a specific key.
-func (ks *KeyState) SetKeyState(keycode int, down bool) bool {
+func (ks *KeyState) SetKeyState(keycode uint8, down bool) bool {
 	byteIndex := keycode / 64
 	bitIndex := uint(keycode % 64)
 	mask := uint64(1 << bitIndex)

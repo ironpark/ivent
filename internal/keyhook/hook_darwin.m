@@ -1,25 +1,24 @@
-#include <ApplicationServices/ApplicationServices.h>
-#include <stdio.h>
-#import "hook_darwin.h"
-#include <pthread.h>
+#import <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
+#include <stdio.h>
+#include <pthread.h>
+#include "hook_darwin.h"
 
 // Go 콜백 함수를 참조하기 위한 함수 포인터 타입
 // void keyEventGoCallback(pid_t pid, CGKeyCode keycode, bool down);
+static Boolean restart_tap = false;
 
 static CFMachPortRef eventTap = NULL;
 static CFRunLoopSourceRef runLoopSource = NULL;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-static void checkEventTapStatus(CFRunLoopTimerRef timer, void *info) {
-    pthread_mutex_lock(&mutex);
-    if (eventTap && !CGEventTapIsEnabled(eventTap)) {
-        CGEventTapEnable(eventTap, true);
-    }
-    pthread_mutex_unlock(&mutex);
-}
 
 static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
+    if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
+        // https://stackoverflow.com/questions/2969110/cgeventtapcreate-breaks-down-mysteriously-with-key-down-events#2971217
+        CGEventTapEnable(eventTap, true);
+        return event;
+    }
     if (type == kCGEventKeyDown || type == kCGEventKeyUp || type == kCGEventFlagsChanged) {
         // 이벤트의 프로세스 ID를 확인
         pid_t pid = (pid_t)CGEventGetIntegerValueField(event, kCGEventTargetUnixProcessID);
@@ -28,6 +27,7 @@ static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType typ
         // 키 다운/업 이벤트 출력
         bool keyDown = (type == kCGEventKeyDown || (type == kCGEventFlagsChanged && (CGEventGetFlags(event) & (kCGEventFlagMaskCommand | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskControl))));
         keyEventGoCallback(pid, keycode, keyDown);
+        return event;
     }
     return event;
 }
@@ -42,13 +42,10 @@ int start() {
             return -1;
         }
         pthread_mutex_unlock(&mutex);
+
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
         CGEventTapEnable(eventTap, true);
-
-        // Add a timer to check the event tap status every 5 minutes
-        CFRunLoopTimerRef timer = CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + 300, 300, 0, 0, checkEventTapStatus, NULL);
-        CFRunLoopAddTimer(CFRunLoopGetMain(), timer, kCFRunLoopCommonModes);
         CFRunLoopRun();
     }
     return 0;
