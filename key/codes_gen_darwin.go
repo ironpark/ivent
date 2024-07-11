@@ -18,7 +18,7 @@ const (
 	F11, F12, F13, F14, F15, F16, F17, F18, F19, F20 = Code(0x67), Code(0x6F), Code(0x69), Code(0x6B), Code(0x71), Code(0x6A), Code(0x40), Code(0x4F), Code(0x50), Code(0x5A)
 
 	// Modifier
-	Shift, Ctrl, Alt, Super, CapsLock, Fn = Code(0x38), Code(0x3B), Code(0x3A), Code(0x37), Code(0x39), Code(0x3F)
+	Shift, Ctrl, Alt, Super, RightShift, RightCtrl, RightAlt, RightSuper, CapsLock, Fn = Code(0x38), Code(0x3B), Code(0x3A), Code(0x37), Code(0x3C), Code(0x3E), Code(0x3D), Code(0x36), Code(0x39), Code(0x3F)
 
 	// Navigation
 	ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Home, End, PageUp, PageDown = Code(0x7E), Code(0x7D), Code(0x7B), Code(0x7C), Code(0x73), Code(0x77), Code(0x74), Code(0x79)
@@ -42,7 +42,7 @@ var (
 		Grave: "GRAVE", Minus: "MINUS", Equal: "EQUAL", LeftBracket: "LEFTBRACKET", RightBracket: "RIGHTBRACKET", Backslash: "BACKSLASH", Semicolon: "SEMICOLON", Quote: "QUOTE", Comma: "COMMA", Dot: "DOT", Slash: "SLASH",
 		Num0: "NUM0", Num1: "NUM1", Num2: "NUM2", Num3: "NUM3", Num4: "NUM4", Num5: "NUM5", Num6: "NUM6", Num7: "NUM7", Num8: "NUM8", Num9: "NUM9",
 		F1: "F1", F2: "F2", F3: "F3", F4: "F4", F5: "F5", F6: "F6", F7: "F7", F8: "F8", F9: "F9", F10: "F10", F11: "F11", F12: "F12", F13: "F13", F14: "F14", F15: "F15", F16: "F16", F17: "F17", F18: "F18", F19: "F19", F20: "F20",
-		Shift: "SHIFT", Ctrl: "CTRL", Alt: "ALT", Super: "SUPER", CapsLock: "CAPSLOCK", Fn: "FN",
+		Shift: "SHIFT", Ctrl: "CTRL", Alt: "ALT", Super: "SUPER", RightShift: "RIGHTSHIFT", RightCtrl: "RIGHTCTRL", RightAlt: "RIGHTALT", RightSuper: "RIGHTSUPER", CapsLock: "CAPSLOCK", Fn: "FN",
 		ArrowUp: "ARROWUP", ArrowDown: "ARROWDOWN", ArrowLeft: "ARROWLEFT", ArrowRight: "ARROWRIGHT", Home: "HOME", End: "END", PageUp: "PAGEUP", PageDown: "PAGEDOWN",
 		Backspace: "BACKSPACE", Delete: "DELETE", Insert: "INSERT", Enter: "ENTER",
 		ESC: "ESC", SpaceBar: "SPACEBAR", Tab: "TAB",
@@ -54,7 +54,7 @@ var (
 		"GRAVE": Grave, "MINUS": Minus, "EQUAL": Equal, "LEFTBRACKET": LeftBracket, "RIGHTBRACKET": RightBracket, "BACKSLASH": Backslash, "SEMICOLON": Semicolon, "QUOTE": Quote, "COMMA": Comma, "DOT": Dot, "SLASH": Slash,
 		"NUM0": Num0, "NUM1": Num1, "NUM2": Num2, "NUM3": Num3, "NUM4": Num4, "NUM5": Num5, "NUM6": Num6, "NUM7": Num7, "NUM8": Num8, "NUM9": Num9,
 		"F1": F1, "F2": F2, "F3": F3, "F4": F4, "F5": F5, "F6": F6, "F7": F7, "F8": F8, "F9": F9, "F10": F10, "F11": F11, "F12": F12, "F13": F13, "F14": F14, "F15": F15, "F16": F16, "F17": F17, "F18": F18, "F19": F19, "F20": F20,
-		"SHIFT": Shift, "CTRL": Ctrl, "ALT": Alt, "SUPER": Super, "CAPSLOCK": CapsLock, "FN": Fn,
+		"SHIFT": Shift, "CTRL": Ctrl, "ALT": Alt, "SUPER": Super, "RIGHTSHIFT": RightShift, "RIGHTCTRL": RightCtrl, "RIGHTALT": RightAlt, "RIGHTSUPER": RightSuper, "CAPSLOCK": CapsLock, "FN": Fn,
 		"ARROWUP": ArrowUp, "ARROWDOWN": ArrowDown, "ARROWLEFT": ArrowLeft, "ARROWRIGHT": ArrowRight, "HOME": Home, "END": End, "PAGEUP": PageUp, "PAGEDOWN": PageDown,
 		"BACKSPACE": Backspace, "DELETE": Delete, "INSERT": Insert, "ENTER": Enter,
 		"ESC": ESC, "SPACEBAR": SpaceBar, "TAB": Tab,

@@ -23,8 +23,16 @@
       },
       {
         "Category": "Modifier",
-        "Names": ["Shift", "Ctrl", "Alt", "Super", "CapsLock", "Fn"],
-        "Codes": ["0x38", "0x3B", "0x3A", "0x37", "0x39", "0x3F"]
+        "Names": [
+          "Shift", "Ctrl", "Alt", "Super",
+          "RightShift", "RightCtrl", "RightAlt", "RightSuper",
+          "CapsLock", "Fn"
+        ],
+        "Codes": [
+          "0x38", "0x3B", "0x3A", "0x37",
+          "0x3C", "0x3E", "0x3D", "0x36",
+          "0x39", "0x3F"
+        ]
       },
       {
         "Category": "Navigation",

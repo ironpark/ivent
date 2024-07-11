@@ -68,6 +68,7 @@ func gen(list []KeyCodes, filename string) {
 			}
 		}
 	}
+	constList += ")\n"
 
 	varList := "var (\n"
 	varList += "\tcodeToName = map[Code]string{\n"

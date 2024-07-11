@@ -1,6 +1,10 @@
 package key
 
-import "strings"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 type Code int
 
@@ -26,7 +30,11 @@ func (k Code) Name() string {
 }
 
 func Name(code Code) string {
-	return codeToName[code]
+	name, ok := codeToName[code]
+	if ok {
+		return name
+	}
+	return fmt.Sprintf("UNK_%d", code)
 }
 
 func Names(codes ...Code) []string {
@@ -40,6 +48,15 @@ func Names(codes ...Code) []string {
 func Codes(names ...string) []Code {
 	codes := make([]Code, len(names))
 	for i, name := range names {
+		if after, found := strings.CutPrefix(name, "UNK_"); found {
+			code, err := strconv.Atoi(after)
+			if err != nil {
+				codes[i] = Code(code)
+			} else {
+				codes[i] = Code(255)
+			}
+			continue
+		}
 		codes[i] = nameToCode[strings.ToUpper(name)]
 	}
 	return codes
