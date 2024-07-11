@@ -1,10 +1,10 @@
 package hook
 
 /*
-#cgo CFLAGS: -x objective-c -Wimplicit-function-declaration
-#cgo LDFLAGS: -framework Cocoa
+#cgo CFLAGS: -I.
+#cgo LDFLAGS: -L. -luser32
 #include <stdlib.h>
-#include "hook_darwin.h"
+#include "hook_windows.h"
 */
 import "C"
 import (

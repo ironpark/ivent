@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <windows.h>
 // Enum for listen modes
 typedef enum {
     LISTEN_KEYBOARD = 1,
