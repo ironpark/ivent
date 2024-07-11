@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"os/exec"
 	"regexp"
@@ -37,9 +38,14 @@ func (k KeyCodes) Split() (KeyCodes, KeyCodes) {
 		}
 }
 
-type KeyCodeConfig struct {
-	Mac   []KeyCodes
+type OsSpecificConfig struct {
+	Codes []KeyCodes
 	Alias map[string][]string
+}
+type KeyCodeConfig struct {
+	Mac     OsSpecificConfig
+	Windows OsSpecificConfig
+	Alias   map[string][]string
 }
 
 func genConst(keyCodes KeyCodes) (constList string) {
@@ -53,7 +59,13 @@ func genConst(keyCodes KeyCodes) (constList string) {
 	return
 }
 
-func gen(list []KeyCodes, alias map[string][]string, filename string) {
+func gen(config OsSpecificConfig, alias map[string][]string, filename string) {
+	list := config.Codes
+	alias = maps.Clone(alias)
+	// Merge aliases
+	for k, v := range config.Alias {
+		alias[k] = v
+	}
 	constList := "const ("
 	for _, keyCodes := range list {
 		if 0 < len(keyCodes.Names) {
@@ -149,5 +161,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	gen(config.Mac, config.Alias, "./codes_gen_darwin.go")
+	gen(config.Windows, config.Alias, "./codes_gen_windows.go")
 }
