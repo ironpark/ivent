@@ -39,7 +39,7 @@ static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType typ
         // Get keycode
         CGKeyCode keycode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
         // Call Go callback function
-        keyEventGoCallback(pid, keycode,  type == kCGEventKeyDown;);
+        keyEventGoCallback(pid, keycode,  type == kCGEventKeyDown);
         return event;
     } else if(type == kCGEventFlagsChanged){
         // Check the process ID of the event
