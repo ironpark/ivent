@@ -34,6 +34,13 @@ const (
 
 	// Keypad Extra
 	PadPlus, PadMinus, PadAsterisk, PadSlash, PadEnter = Code(0x45), Code(0x4B), Code(0x4C), Code(0x4D), Code(0x4E)
+
+	// KeyCode Aliases
+
+	QuestionMark = Slash
+	Option       = Alt
+	Cmd          = Super
+	Win          = Super
 )
 
 var (
@@ -60,5 +67,18 @@ var (
 		"ESC": ESC, "SPACEBAR": SpaceBar, "TAB": Tab,
 		"PAD0": Pad0, "PAD1": Pad1, "PAD2": Pad2, "PAD3": Pad3, "PAD4": Pad4, "PAD5": Pad5, "PAD6": Pad6, "PAD7": Pad7, "PAD8": Pad8, "PAD9": Pad9,
 		"PADPLUS": PadPlus, "PADMINUS": PadMinus, "PADASTERISK": PadAsterisk, "PADSLASH": PadSlash, "PADENTER": PadEnter,
+		// KeyCode Aliases
+		"_": Minus, "-": Minus,
+		"+": Equal, "=": Equal,
+		"{": LeftBracket, "[": LeftBracket,
+		"}": RightBracket, "]": RightBracket,
+		"|": Backslash, "\\": Backslash,
+		":": Semicolon, ";": Semicolon,
+		"\"": Quote, "'": Quote,
+		"\u003c": Comma, ",": Comma,
+		"\u003e": Dot, ".": Dot,
+		"QuestionMark": Slash, "?": Slash, "/": Slash,
+		"Option": Alt,
+		"Cmd":    Super, "Win": Super,
 	}
 )

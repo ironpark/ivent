@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 )
 
@@ -38,7 +39,7 @@ func (k KeyCodes) Split() (KeyCodes, KeyCodes) {
 
 type KeyCodeConfig struct {
 	Mac   []KeyCodes
-	Alias map[string]any
+	Alias map[string][]string
 }
 
 func genConst(keyCodes KeyCodes) (constList string) {
@@ -52,7 +53,7 @@ func genConst(keyCodes KeyCodes) (constList string) {
 	return
 }
 
-func gen(list []KeyCodes, filename string) {
+func gen(list []KeyCodes, alias map[string][]string, filename string) {
 	constList := "const ("
 	for _, keyCodes := range list {
 		if 0 < len(keyCodes.Names) {
@@ -65,6 +66,23 @@ func gen(list []KeyCodes, filename string) {
 				a, b := keyCodes.Split()
 				constList += genConst(a)
 				constList += genConst(b)
+			}
+		}
+	}
+	constList += "\n// KeyCode Aliases\n\n"
+
+	// Check a-Z match
+	regex := regexp.MustCompile(`^[A-Za-z][A-Za-z0-9]*$`)
+	for _, keyCodes := range list {
+		for _, keyName := range keyCodes.NameWithPrefix() {
+			if aliases, ok := alias[keyName]; ok {
+				//constList += "// " + keyName + "\n"
+				for _, aliasName := range aliases {
+					if !regex.Match([]byte(aliasName)) {
+						continue
+					}
+					constList += fmt.Sprintf("%s = %s\n", aliasName, keyName)
+				}
 			}
 		}
 	}
@@ -90,6 +108,19 @@ func gen(list []KeyCodes, filename string) {
 		varList += "\t\t" + strings.Join(names, ",") + ","
 		varList += "\n"
 	}
+	varList += "// KeyCode Aliases\n"
+	for _, keyCodes := range list {
+		for _, keyName := range keyCodes.NameWithPrefix() {
+			if aliases, ok := alias[keyName]; ok {
+				for _, aliasName := range aliases {
+					data, _ := json.Marshal(aliasName)
+					varList += fmt.Sprintf("%s:%s", string(data), keyName) + ","
+				}
+				varList += "\n"
+			}
+		}
+	}
+
 	varList += "\t}\n"
 	varList += ")\n"
 
@@ -118,5 +149,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	gen(config.Mac, "./codes_gen_darwin.go")
+	gen(config.Mac, config.Alias, "./codes_gen_darwin.go")
 }

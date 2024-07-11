@@ -63,7 +63,7 @@
       }
   ],
   "Alias": {
-    "Alt": "Option",
+    "Alt": ["Option"],
     "Super": ["Cmd", "Win"],
     "Slash": ["QuestionMark", "?", "/"],
     "Comma": ["<", ","],

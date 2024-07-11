@@ -24,15 +24,6 @@ import (
 	"time"
 )
 
-func keyQWE() {
-	fmt.Println("QWE")
-}
-func keyASD() {
-	fmt.Println("ASD")
-}
-func keyZXC() {
-	fmt.Println("ZXC")
-}
 
 func main() {
 	// Create a context with a 10-second timeout
@@ -41,11 +32,19 @@ func main() {
 
 	// Register key combinations with their respective callbacks
 	ivent.Register(
-		ivent.NewComb([]key.Code{key.Q, key.W, key.E}, keyQWE), // Q+W+E combination
-		ivent.NewCombFromStr("A+S+D", keyASD),                  // A+S+D combination from string
+		// Q+W+E combination
+		ivent.NewComb([]key.Code{key.Q, key.W, key.E}, func() {
+			fmt.Println("QWE")
+		}),
+		// A+S+D combination from string
+		ivent.NewCombFromStr("A+S+D", func() {
+			fmt.Println("ASD")
+		}),
 		// AllowOtherInputs: if true, allows other inputs after the key combination
 		// For example, if you press this key combination, it also allows Z+X+C + <any keys>
-		ivent.NewComb([]key.Code{key.Z, key.X, key.C}, keyZXC, ivent.AllowOtherInputs),
+		ivent.NewComb([]key.Code{key.Z, key.X, key.C}, func() {
+			fmt.Println("ZXC")
+		}, ivent.AllowOtherInputs),
 	)
 
 	// Start listening for input events with the given context
@@ -54,8 +53,9 @@ func main() {
 ```
 
 ## TODO
+- [ ] More options for key combinations
 - [x] Generate key-code table `key/codes.go` using `go:generate`
-    - [ ] Alias Support
+    - [x] Alias Support
     - [ ] Add windows,linux key-code config in `key/keycode.json` file
 - [ ] Add alias for key codes (e.g. `RightBracket` -> `}`) 
 - [ ] Add Support mouse events
