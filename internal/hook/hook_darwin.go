@@ -1,4 +1,4 @@
-package keyhook
+package hook
 
 /*
 #cgo CFLAGS: -x objective-c -Wimplicit-function-declaration
@@ -16,7 +16,7 @@ import (
 func start() {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	fmt.Println(C.start())
+	fmt.Println(C.start(C.LISTEN_MOUSEANDKEYBOARD))
 }
 
 func Start(ctx context.Context) {

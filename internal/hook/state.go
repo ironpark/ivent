@@ -1,4 +1,4 @@
-package keyhook
+package hook
 
 import (
 	"github.com/ironpark/ivent/key"

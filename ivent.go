@@ -2,7 +2,7 @@ package ivent
 
 import (
 	"context"
-	"github.com/ironpark/ivent/internal/keyhook"
+	"github.com/ironpark/ivent/internal/hook"
 	"github.com/ironpark/ivent/key"
 	"strings"
 	"sync"
@@ -28,7 +28,7 @@ type Comb struct {
 
 func init() {
 	// Register the update callback to be called whenever the key state is updated.
-	keyhook.State.AddUpdateCallback(update)
+	hook.State.AddUpdateCallback(update)
 }
 
 // NewCombFromStr creates a new Comb from a string of key codes.
@@ -83,9 +83,24 @@ func update(state key.Table, pressed bool) {
 	}
 }
 
+// MouseXY returns the current x and y position of the mouse pointer.
+func MouseXY() (X int32, Y int32) {
+	return hook.MouseX(), hook.MouseY()
+}
+
+// MouseX returns the current x position of the mouse pointer.
+func MouseX() int32 {
+	return hook.MouseX()
+}
+
+// MouseY returns the current y position of the mouse pointer.
+func MouseY() int32 {
+	return hook.MouseY()
+}
+
 // Start begins listening for input events and runs until the context is done.
 func Start(ctx context.Context) {
-	keyhook.Start(ctx)
+	hook.Start(ctx)
 }
 
 // Register registers new key combinations to be monitored.
