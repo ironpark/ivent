@@ -21,7 +21,7 @@ func MakeTable(codes ...Code) Table {
 func (kpt Table) String() string {
 	str := ""
 	for _, code := range kpt.PressedKeys() {
-		str += fmt.Sprintf("%s ", code.Name())
+		str += fmt.Sprintf("[%d:%s] ", code, code.Name())
 	}
 	return str
 }

@@ -1,17 +1,31 @@
 #import <ApplicationServices/ApplicationServices.h>
 #import <Cocoa/Cocoa.h>
+#import "hook_help_darwin.m"
 #include <stdio.h>
 #include <pthread.h>
 #include "hook_darwin.h"
-
-// Go 콜백 함수를 참조하기 위한 함수 포인터 타입
-// void keyEventGoCallback(pid_t pid, CGKeyCode keycode, bool down);
-static Boolean restart_tap = false;
 
 static CFMachPortRef eventTap = NULL;
 static CFRunLoopSourceRef runLoopSource = NULL;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+inline static Boolean isModifierPressed(CGKeyCode keycode,CGEventFlags flags) {
+    switch (keycode) {
+        case kVK_RightShift:
+        case kVK_Shift:
+        return (flags & kCGEventFlagMaskShift) != 0;
+        case kVK_RightControl:
+        case kVK_Control:
+        return (flags & kCGEventFlagMaskControl) != 0;
+        case kVK_RightOption:
+        case kVK_Option:
+        return (flags & kCGEventFlagMaskAlternate) != 0;
+        case kVK_RightCommand:
+        case kVK_Command:
+        return (flags & kCGEventFlagMaskCommand) != 0;
+        return false;
+    }
+}
 
 static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
     if (type == kCGEventTapDisabledByTimeout || type == kCGEventTapDisabledByUserInput) {
@@ -19,13 +33,21 @@ static CGEventRef keyEventCGEventCallback(CGEventTapProxy proxy, CGEventType typ
         CGEventTapEnable(eventTap, true);
         return event;
     }
-    if (type == kCGEventKeyDown || type == kCGEventKeyUp || type == kCGEventFlagsChanged) {
-        // 이벤트의 프로세스 ID를 확인
+    if (type == kCGEventKeyDown || type == kCGEventKeyUp ) {
+        // Check the process ID of the event
         pid_t pid = (pid_t)CGEventGetIntegerValueField(event, kCGEventTargetUnixProcessID);
-        // 키 코드 가져오기
+        // Get keycode
         CGKeyCode keycode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
-        // 키 다운/업 이벤트 출력
-        bool keyDown = (type == kCGEventKeyDown || (type == kCGEventFlagsChanged && (CGEventGetFlags(event) & (kCGEventFlagMaskCommand | kCGEventFlagMaskShift | kCGEventFlagMaskAlternate | kCGEventFlagMaskControl))));
+        // Call Go callback function
+        keyEventGoCallback(pid, keycode,  type == kCGEventKeyDown;);
+        return event;
+    } else if(type == kCGEventFlagsChanged){
+        // Check the process ID of the event
+        pid_t pid = (pid_t)CGEventGetIntegerValueField(event, kCGEventTargetUnixProcessID);
+        // Get keycode
+        CGKeyCode keycode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
+        // Call Go callback function
+        bool keyDown = isModifierPressed(keycode,(CGEventGetFlags(event)));
         keyEventGoCallback(pid, keycode, keyDown);
         return event;
     }
