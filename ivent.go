@@ -103,6 +103,11 @@ func Start(ctx context.Context) {
 	hook.Start(ctx)
 }
 
+// ResetKeyState resets the key state to all keys being unpressed.
+func ResetKeyState() {
+	hook.State.Reset()
+}
+
 // Register registers new key combinations to be monitored.
 // It adds the combinations to the list of monitored combinations.
 func Register(comb ...*Comb) {
