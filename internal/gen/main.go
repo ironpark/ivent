@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"maps"
@@ -125,8 +126,12 @@ func gen(config OsSpecificConfig, alias map[string][]string, filename string) {
 		for _, keyName := range keyCodes.NameWithPrefix() {
 			if aliases, ok := alias[keyName]; ok {
 				for _, aliasName := range aliases {
-					data, _ := json.Marshal(aliasName)
-					varList += fmt.Sprintf("%s:%s", string(data), keyName) + ","
+					buf := &bytes.Buffer{}
+					enc := json.NewEncoder(buf)
+					enc.SetEscapeHTML(false)
+					_ = enc.Encode(aliasName)
+					data := strings.ToUpper(strings.TrimSpace(buf.String()))
+					varList += fmt.Sprintf("%s:%s", data, keyName) + ","
 				}
 				varList += "\n"
 			}

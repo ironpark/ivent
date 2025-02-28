@@ -75,10 +75,10 @@ var (
 		"|": Backslash, "\\": Backslash,
 		":": Semicolon, ";": Semicolon,
 		"\"": Quote, "'": Quote,
-		"\u003c": Comma, ",": Comma,
-		"\u003e": Dot, ".": Dot,
-		"QuestionMark": Slash, "?": Slash, "/": Slash,
-		"Option": Alt,
-		"Cmd":    Super, "Win": Super,
+		"<": Comma, ",": Comma,
+		">": Dot, ".": Dot,
+		"QUESTIONMARK": Slash, "?": Slash, "/": Slash,
+		"OPTION": Alt,
+		"CMD":    Super, "WIN": Super,
 	}
 )
