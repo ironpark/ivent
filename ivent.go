@@ -24,6 +24,8 @@ type Comb struct {
 	Combination key.Table
 	Callback    func()
 	Option      Opt
+	// invalid is set when the combination was built from an unknown key name; it never matches.
+	invalid bool
 }
 
 func init() {
@@ -31,21 +33,32 @@ func init() {
 	hook.State.AddUpdateCallback(update)
 }
 
+// Errors returned by Start.
+var (
+	ErrAlreadyRunning = hook.ErrAlreadyRunning
+	ErrHookFailed     = hook.ErrHookFailed
+)
+
+// ParseComb creates a new Comb from a string of key names such as "Ctrl+Shift+A".
+// It returns an error wrapping key.ErrUnknownKey if a key name cannot be resolved.
+func ParseComb(codes string, callback func(), options ...Opt) (*Comb, error) {
+	keyCodes, err := key.ParseCodes(strings.Split(codes, "+")...)
+	if err != nil {
+		return nil, err
+	}
+	return NewComb(keyCodes, callback, options...), nil
+}
+
 // NewCombFromStr creates a new Comb from a string of key codes.
 // Example input: "A+S+D"
 // It splits the string by "+" and creates a key combination.
+// A combination containing an unknown key name never matches; use ParseComb to detect it.
 func NewCombFromStr(codes string, callback func(), options ...Opt) *Comb {
-	codeNames := strings.Split(codes, "+")
-	comb := key.MakeTable(key.Codes(codeNames...)...)
-	var option Opt
-	for _, opt := range options {
-		option |= opt
+	comb, err := ParseComb(codes, callback, options...)
+	if err != nil {
+		return &Comb{Callback: callback, invalid: true}
 	}
-	return &Comb{
-		Combination: comb,
-		Callback:    callback,
-		Option:      option,
-	}
+	return comb
 }
 
 // NewComb creates a new Comb from a slice of key codes.
@@ -65,21 +78,25 @@ func NewComb(codes []key.Code, callback func(), options ...Opt) *Comb {
 
 // update is the callback function that gets called whenever the key state is updated.
 // It checks the current state against registered combinations and triggers the appropriate callbacks.
-func update(state key.Table, pressed bool) {
+// Callbacks run without holding the lock, so they may call Register, Remove or Reset.
+func update(state key.Table, pressed bool, repeat bool) {
 	if !pressed {
 		return
 	}
 	mu.RLock()
-	defer mu.RUnlock()
+	var matched []func()
 	for _, comb := range combinations {
-		if comb.Combination.Eq(state) {
-			comb.Callback()
+		if comb.invalid || (repeat && comb.Option&AllowRepeat == 0) {
 			continue
 		}
-		if comb.Option&AllowOtherInputs == 1 && comb.Combination.IsSubsetOf(state) {
-			comb.Callback()
-			continue
+		if comb.Combination.Eq(state) ||
+			(comb.Option&AllowOtherInputs != 0 && comb.Combination.IsSubsetOf(state)) {
+			matched = append(matched, comb.Callback)
 		}
+	}
+	mu.RUnlock()
+	for _, callback := range matched {
+		callback()
 	}
 }
 
@@ -98,9 +115,12 @@ func MouseY() int32 {
 	return hook.MouseY()
 }
 
-// Start begins listening for input events and runs until the context is done.
-func Start(ctx context.Context) {
-	hook.Start(ctx)
+// Start begins listening for input events and blocks until the context is done.
+// Combination callbacks are invoked on the goroutine that called Start.
+// It returns ErrHookFailed if the OS hook cannot be installed (on macOS, usually missing
+// Accessibility / Input Monitoring permission) and ErrAlreadyRunning if it is already running.
+func Start(ctx context.Context) error {
+	return hook.Start(ctx)
 }
 
 // ResetKeyState resets the key state to all keys being unpressed.
@@ -113,9 +133,7 @@ func ResetKeyState() {
 func Register(comb ...*Comb) {
 	mu.Lock()
 	defer mu.Unlock()
-	for _, c := range comb {
-		combinations = append(combinations, c)
-	}
+	combinations = append(combinations, comb...)
 }
 
 // Reset clears the list of monitored combinations.

@@ -2,13 +2,14 @@ package hook
 
 import (
 	"github.com/ironpark/ivent/key"
-	"strings"
 	"sync"
 )
 
 var State = NewKeyState()
 
-type UpdateCallback func(state key.Table, pressed bool)
+// UpdateCallback is called with a snapshot of the key states.
+// repeat is true when a key that is already down is reported down again (auto-repeat).
+type UpdateCallback func(state key.Table, pressed bool, repeat bool)
 
 // KeyState is a struct that stores the current key states.
 type KeyState struct {
@@ -26,9 +27,7 @@ func NewKeyState() *KeyState {
 func (ks *KeyState) Reset() {
 	ks.mu.Lock()
 	defer ks.mu.Unlock()
-	ks.states = [4]uint64{
-		0, 0, 0, 0,
-	}
+	ks.states = key.Table{}
 }
 
 // AddUpdateCallback adds a new callback to be called when the key states are updated.
@@ -38,45 +37,23 @@ func (ks *KeyState) AddUpdateCallback(callback UpdateCallback) {
 	ks.updateCallback = append(ks.updateCallback, callback)
 }
 
-// RemoveUpdateCallback removes a callback from the list of update callbacks.
-func (ks *KeyState) RemoveUpdateCallback(callback UpdateCallback) {
-	ks.mu.Lock()
-	defer ks.mu.Unlock()
-	for i, cb := range ks.updateCallback {
-		if &cb == &callback {
-			ks.updateCallback = append(ks.updateCallback[:i], ks.updateCallback[i+1:]...)
-			break
-		}
-	}
-}
-
 // SetKeyState sets the state of a specific key.
+// Callbacks are invoked after the lock is released, so they may safely call back into KeyState.
 func (ks *KeyState) SetKeyState(keycode uint8, down bool) bool {
 	// ignore unknown keys
-	if strings.HasPrefix(key.Name(key.Code(keycode)), "Unk") {
+	if !key.Known(key.Code(keycode)) {
 		return false
 	}
-	byteIndex := keycode / 64
-	bitIndex := uint(keycode % 64)
-	mask := uint64(1 << bitIndex)
-
 	ks.mu.Lock()
-	defer ks.mu.Unlock()
+	updated := ks.states.Set(key.Code(keycode), down)
+	snapshot := ks.states
+	callbacks := ks.updateCallback
+	ks.mu.Unlock()
 
-	oldState := ks.states[byteIndex]
-	newState := oldState
-
-	if down {
-		newState |= mask
-	} else {
-		newState &^= mask
-	}
-
-	ks.states[byteIndex] = newState
-	updated := oldState != newState
-	if updated && len(ks.updateCallback) > 0 {
-		for _, callback := range ks.updateCallback {
-			callback(ks.states, down)
+	// A down event that changes nothing is an auto-repeat.
+	if updated || down {
+		for _, callback := range callbacks {
+			callback(snapshot, down, !updated)
 		}
 	}
 	return updated

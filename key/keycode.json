@@ -60,7 +60,7 @@
         "Category": "Keypad Extra",
         "Prefix": "Pad",
         "Names": ["Plus", "Minus", "Asterisk", "Slash", "Enter"],
-        "Codes": ["0x45", "0x4B", "0x4C", "0x4D", "0x4E"]
+        "Codes": ["0x45", "0x4E", "0x43", "0x4B", "0x4C"]
       }
     ]
   },

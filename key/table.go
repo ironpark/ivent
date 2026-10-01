@@ -6,16 +6,41 @@ import "fmt"
 // It consists of four 64-bit integers, each bit representing a specific key.
 type Table [4]uint64
 
+// tableSize is the number of key codes a Table can hold.
+const tableSize = 64 * 4
+
+// slot returns the word index and bit mask of a key code, and false if it is out of range.
+func slot(code Code) (int, uint64, bool) {
+	if code < 0 || code >= tableSize {
+		return 0, 0, false
+	}
+	return int(code / 64), 1 << uint(code%64), true
+}
+
 // MakeTable creates a Table from a list of key codes.
+// Codes outside the range of the Table are ignored.
 func MakeTable(codes ...Code) Table {
 	table := Table{}
 	for _, code := range codes {
-		byteIndex := code / 64
-		bitIndex := uint(code % 64)
-		mask := uint64(1 << bitIndex)
-		table[byteIndex] |= mask
+		table.Set(code, true)
 	}
 	return table
+}
+
+// Set marks a key as pressed or released and reports whether the Table changed.
+// Codes outside the range of the Table are ignored.
+func (kpt *Table) Set(code Code, down bool) bool {
+	i, mask, ok := slot(code)
+	if !ok {
+		return false
+	}
+	old := kpt[i]
+	if down {
+		kpt[i] |= mask
+	} else {
+		kpt[i] &^= mask
+	}
+	return kpt[i] != old
 }
 
 func (kpt Table) String() string {
@@ -41,10 +66,8 @@ func (kpt Table) IsSubsetOf(other Table) bool {
 
 // IsKeyPressed checks if a specific key is pressed in the Table.
 func (kpt Table) IsKeyPressed(keycode Code) bool {
-	byteIndex := keycode / 64
-	bitIndex := uint(keycode % 64)
-	mask := uint64(1 << bitIndex)
-	return kpt[byteIndex]&mask != 0
+	i, mask, ok := slot(keycode)
+	return ok && kpt[i]&mask != 0
 }
 
 // CheckKeyCombination checks if all the specified key codes are pressed in the Table.

@@ -33,7 +33,7 @@ const (
 	Pad0, Pad1, Pad2, Pad3, Pad4, Pad5, Pad6, Pad7, Pad8, Pad9 = Code(0x52), Code(0x53), Code(0x54), Code(0x55), Code(0x56), Code(0x57), Code(0x58), Code(0x59), Code(0x5B), Code(0x5C)
 
 	// Keypad Extra
-	PadPlus, PadMinus, PadAsterisk, PadSlash, PadEnter = Code(0x45), Code(0x4B), Code(0x4C), Code(0x4D), Code(0x4E)
+	PadPlus, PadMinus, PadAsterisk, PadSlash, PadEnter = Code(0x45), Code(0x4E), Code(0x43), Code(0x4B), Code(0x4C)
 
 	// KeyCode Aliases
 

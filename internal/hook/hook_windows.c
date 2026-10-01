@@ -4,6 +4,8 @@
 
 static HHOOK keyboardHook = NULL;
 static HHOOK mouseHook = NULL;
+static SRWLOCK lock = SRWLOCK_INIT;
+static DWORD hookThreadId = 0;
 
 LRESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
     if (nCode >= 0) {
@@ -52,29 +54,7 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
     return CallNextHookEx(mouseHook, nCode, wParam, lParam);
 }
 
-int start(ListenMode mode) {
-    if (mode & LISTEN_KEYBOARD) {
-        keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
-        if (!keyboardHook) return -1;
-    }
-    if (mode & LISTEN_MOUSE) {
-        mouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, NULL, 0);
-        if (!mouseHook) {
-            if (keyboardHook) UnhookWindowsHookEx(keyboardHook);
-            return -1;
-        }
-    }
-
-    MSG msg;
-    while (GetMessage(&msg, NULL, 0, 0)) {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    return 0;
-}
-
-void stop() {
+static void unhookAll() {
     if (keyboardHook) {
         UnhookWindowsHookEx(keyboardHook);
         keyboardHook = NULL;
@@ -83,4 +63,53 @@ void stop() {
         UnhookWindowsHookEx(mouseHook);
         mouseHook = NULL;
     }
+}
+
+// start returns 0 on success or the GetLastError code of the failed hook installation.
+int start(ListenMode mode) {
+    MSG msg;
+    // Make sure this thread has a message queue before stop can post WM_QUIT to it.
+    PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
+
+    if (mode & LISTEN_KEYBOARD) {
+        keyboardHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc, NULL, 0);
+        if (!keyboardHook) goto fail;
+    }
+    if (mode & LISTEN_MOUSE) {
+        mouseHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, NULL, 0);
+        if (!mouseHook) goto fail;
+    }
+
+    AcquireSRWLockExclusive(&lock);
+    hookThreadId = GetCurrentThreadId();
+    ReleaseSRWLockExclusive(&lock);
+
+    hookReadyGoCallback();
+    while (GetMessage(&msg, NULL, 0, 0) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    AcquireSRWLockExclusive(&lock);
+    hookThreadId = 0;
+    ReleaseSRWLockExclusive(&lock);
+    // Hooks are removed by the thread that installed them.
+    unhookAll();
+    return 0;
+
+fail: {
+        DWORD err = GetLastError();
+        unhookAll();
+        return err ? (int)err : -1;
+    }
+}
+
+// stop can be called from any thread once start has signalled ready.
+// WM_QUIT stays queued until the message loop reads it.
+void stop() {
+    AcquireSRWLockExclusive(&lock);
+    if (hookThreadId != 0) {
+        PostThreadMessage(hookThreadId, WM_QUIT, 0, 0);
+    }
+    ReleaseSRWLockExclusive(&lock);
 }

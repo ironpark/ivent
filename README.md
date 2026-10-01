@@ -6,7 +6,8 @@ Simple input event hook library for golang
 
 ## Warning
 - This package is in a very early stage and may undergo breaking changes.
-- While there are plans for future support on Windows and Linux, it currently only works on macOS.
+- Currently supports macOS and Windows. Linux support is planned.
+- On macOS, the process needs Accessibility (or Input Monitoring) permission.
 
 ## Usage
 ```bash
@@ -36,7 +37,7 @@ func main() {
 		ivent.NewComb([]key.Code{key.Q, key.W, key.E}, func() {
 			fmt.Println("QWE")
 		}),
-		// A+S+D combination from string
+		// A+S+D combination from string (unknown key names never match; use ivent.ParseComb to get an error)
 		ivent.NewCombFromStr("A+S+D", func() {
 			fmt.Println("ASD")
 		}),
@@ -47,8 +48,12 @@ func main() {
 		}, ivent.AllowOtherInputs),
 	)
 
-	// Start listening for input events with the given context
-	ivent.Start(ctx)
+	// Start listening for input events with the given context.
+	// Callbacks are invoked on this goroutine; Start blocks until ctx is done.
+	if err := ivent.Start(ctx); err != nil {
+		// ivent.ErrHookFailed: e.g. missing Accessibility permission on macOS
+		fmt.Println(err)
+	}
 }
 ```
 
@@ -60,4 +65,5 @@ func main() {
 - [ ] Add alias for key codes (e.g. `RightBracket` -> `}`) 
 - [ ] Add Support mouse events
 - [ ] Implement key event triggering
-- [ ] Add support for Windows and Linux
+- [x] Add support for Windows
+- [ ] Add support for Linux

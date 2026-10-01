@@ -1,5 +1,5 @@
-#ifndef HOOK_DARWIN_H
-#define HOOK_DARWIN_H
+#ifndef HOOK_WINDOWS_H
+#define HOOK_WINDOWS_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -17,7 +17,9 @@ void keyEventGoCallback(int pid, uint8_t keyCode, uint8_t down);
 void mouseEventGoCallback(int pid, int x, int y, int button, bool isDown);
 void mouseMoveGoCallback(int pid, int x, int y);
 void mouseWheelGoCallback(int pid, int x, int y, int deltaY);
+// Called by start once the hook is installed and stop can be used
+void hookReadyGoCallback();
 // Start and Stop
 void stop();
 int start(ListenMode mode);
-#endif // HOOK_DARWIN_H
+#endif // HOOK_WINDOWS_H

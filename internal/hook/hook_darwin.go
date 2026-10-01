@@ -7,34 +7,15 @@ package hook
 #include "hook_darwin.h"
 */
 import "C"
-import (
-	"context"
-	"fmt"
-	"runtime"
-)
+import "fmt"
 
-func start() {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	fmt.Println(C.start(C.LISTEN_MOUSEANDKEYBOARD))
+func platformStart() error {
+	if C.start(C.LISTEN_MOUSEANDKEYBOARD) != 0 {
+		return fmt.Errorf("%w: grant Accessibility or Input Monitoring permission to this process", ErrHookFailed)
+	}
+	return nil
 }
 
-func Start(ctx context.Context) {
-	go start()
-	go func(ctx context.Context) {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case event := <-eventCh:
-				State.SetKeyState(event.keyCode(), event.down())
-			}
-		}
-	}(ctx)
-	<-ctx.Done()
-	C.stop()
-}
-
-func Stop() {
+func platformStop() {
 	C.stop()
 }

@@ -2,39 +2,20 @@ package hook
 
 /*
 #cgo CFLAGS: -I.
-#cgo LDFLAGS: -L. -luser32
+#cgo LDFLAGS: -luser32
 #include <stdlib.h>
 #include "hook_windows.h"
 */
 import "C"
-import (
-	"context"
-	"fmt"
-	"runtime"
-)
+import "fmt"
 
-func start() {
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	fmt.Println(C.start(C.LISTEN_MOUSEANDKEYBOARD))
+func platformStart() error {
+	if code := C.start(C.LISTEN_MOUSEANDKEYBOARD); code != 0 {
+		return fmt.Errorf("%w: SetWindowsHookEx failed (error %d)", ErrHookFailed, int(code))
+	}
+	return nil
 }
 
-func Start(ctx context.Context) {
-	go start()
-	go func(ctx context.Context) {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case event := <-eventCh:
-				State.SetKeyState(event.keyCode(), event.down())
-			}
-		}
-	}(ctx)
-	<-ctx.Done()
-	C.stop()
-}
-
-func Stop() {
+func platformStop() {
 	C.stop()
 }
