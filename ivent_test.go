@@ -101,7 +101,7 @@ func TestParseComb(t *testing.T) {
 		t.Fatal(err)
 	}
 	Register(comb)
-	press(key.Ctrl, key.Shift, key.A)
+	press(key.LeftCtrl, key.LeftShift, key.A)
 	if count != 1 {
 		t.Fatalf("expected 1 call, got %d", count)
 	}
@@ -112,8 +112,45 @@ func TestUnknownNameNeverMatches(t *testing.T) {
 	count := 0
 	// Previously "Shitf" resolved to code 0, which is key.A on macOS.
 	Register(NewCombFromStr("Ctrl+Shitf", func() { count++ }))
-	press(key.Ctrl, key.A)
+	press(key.LeftCtrl, key.A)
 	if count != 0 {
 		t.Fatalf("combination with unknown key must not fire, got %d", count)
+	}
+}
+
+func TestSideIndependentModifier(t *testing.T) {
+	setup(t)
+	any, right := 0, 0
+	Register(
+		NewComb([]key.Code{key.Ctrl, key.C}, func() { any++ }),
+		NewCombFromStr("RightCtrl+C", func() { right++ }),
+	)
+
+	press(key.RightCtrl, key.C)
+	release(key.RightCtrl, key.C)
+	press(key.LeftCtrl, key.C)
+	release(key.LeftCtrl, key.C)
+	if any != 2 {
+		t.Fatalf("Ctrl+C must match both sides, got %d", any)
+	}
+	if right != 1 {
+		t.Fatalf("RightCtrl+C must match only the right side, got %d", right)
+	}
+
+	// Both sides held still count as Ctrl.
+	press(key.LeftCtrl, key.RightCtrl, key.C)
+	if any != 3 {
+		t.Fatalf("Ctrl+C must match with both sides held, got %d", any)
+	}
+}
+
+func TestSideIndependentModifierExact(t *testing.T) {
+	setup(t)
+	count := 0
+	Register(NewComb([]key.Code{key.Ctrl, key.C}, func() { count++ }))
+
+	press(key.LeftCtrl, key.LeftShift, key.C)
+	if count != 0 {
+		t.Fatalf("Ctrl+C must not match Ctrl+Shift+C, got %d", count)
 	}
 }

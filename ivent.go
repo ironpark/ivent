@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/ironpark/ivent/internal/hook"
 	"github.com/ironpark/ivent/key"
-	"strings"
 	"sync"
 )
 
@@ -21,11 +20,9 @@ const (
 )
 
 type Comb struct {
-	Combination key.Table
+	Combination key.Combo
 	Callback    func()
 	Option      Opt
-	// invalid is set when the combination was built from an unknown key name; it never matches.
-	invalid bool
 }
 
 func init() {
@@ -42,11 +39,11 @@ var (
 // ParseComb creates a new Comb from a string of key names such as "Ctrl+Shift+A".
 // It returns an error wrapping key.ErrUnknownKey if a key name cannot be resolved.
 func ParseComb(codes string, callback func(), options ...Opt) (*Comb, error) {
-	keyCodes, err := key.ParseCodes(strings.Split(codes, "+")...)
+	combo, err := key.ParseCombo(codes)
 	if err != nil {
 		return nil, err
 	}
-	return NewComb(keyCodes, callback, options...), nil
+	return newComb(combo, callback, options), nil
 }
 
 // NewCombFromStr creates a new Comb from a string of key codes.
@@ -54,23 +51,24 @@ func ParseComb(codes string, callback func(), options ...Opt) (*Comb, error) {
 // It splits the string by "+" and creates a key combination.
 // A combination containing an unknown key name never matches; use ParseComb to detect it.
 func NewCombFromStr(codes string, callback func(), options ...Opt) *Comb {
-	comb, err := ParseComb(codes, callback, options...)
-	if err != nil {
-		return &Comb{Callback: callback, invalid: true}
-	}
-	return comb
+	combo, _ := key.ParseCombo(codes) // an empty Combo on error, which never matches
+	return newComb(combo, callback, options)
 }
 
 // NewComb creates a new Comb from a slice of key codes.
 // It creates a key combination and assigns the provided callback and options.
+// Side-independent modifiers such as key.Ctrl match either the left or the right key.
 func NewComb(codes []key.Code, callback func(), options ...Opt) *Comb {
-	comb := key.MakeTable(codes...)
+	return newComb(key.NewCombo(codes...), callback, options)
+}
+
+func newComb(combo key.Combo, callback func(), options []Opt) *Comb {
 	var option Opt
 	for _, opt := range options {
 		option |= opt
 	}
 	return &Comb{
-		Combination: comb,
+		Combination: combo,
 		Callback:    callback,
 		Option:      option,
 	}
@@ -86,11 +84,15 @@ func update(state key.Table, pressed bool, repeat bool) {
 	mu.RLock()
 	var matched []func()
 	for _, comb := range combinations {
-		if comb.invalid || (repeat && comb.Option&AllowRepeat == 0) {
+		if repeat && comb.Option&AllowRepeat == 0 {
 			continue
 		}
-		if comb.Combination.Eq(state) ||
-			(comb.Option&AllowOtherInputs != 0 && comb.Combination.IsSubsetOf(state)) {
+		// An exact match is also a subset match, so one check is enough.
+		match := comb.Combination.Match
+		if comb.Option&AllowOtherInputs != 0 {
+			match = comb.Combination.MatchSubset
+		}
+		if match(state) {
 			matched = append(matched, comb.Callback)
 		}
 	}

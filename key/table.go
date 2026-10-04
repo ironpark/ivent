@@ -18,7 +18,8 @@ func slot(code Code) (int, uint64, bool) {
 }
 
 // MakeTable creates a Table from a list of key codes.
-// Codes outside the range of the Table are ignored.
+// Codes outside the range of the Table, including side-independent modifiers such as Ctrl, are ignored.
+// Use Combo to describe a combination with side-independent modifiers.
 func MakeTable(codes ...Code) Table {
 	table := Table{}
 	for _, code := range codes {
@@ -62,6 +63,21 @@ func (kpt Table) IsSubsetOf(other Table) bool {
 		(kpt[1]&other[1] == kpt[1]) &&
 		(kpt[2]&other[2] == kpt[2]) &&
 		(kpt[3]&other[3] == kpt[3])
+}
+
+// intersects reports whether the two Tables have any key in common.
+func (kpt Table) intersects(other Table) bool {
+	return kpt[0]&other[0] != 0 || kpt[1]&other[1] != 0 || kpt[2]&other[2] != 0 || kpt[3]&other[3] != 0
+}
+
+// union returns the Table with the keys of both Tables.
+func (kpt Table) union(other Table) Table {
+	return Table{kpt[0] | other[0], kpt[1] | other[1], kpt[2] | other[2], kpt[3] | other[3]}
+}
+
+// without returns the Table with the keys of other removed.
+func (kpt Table) without(other Table) Table {
+	return Table{kpt[0] &^ other[0], kpt[1] &^ other[1], kpt[2] &^ other[2], kpt[3] &^ other[3]}
 }
 
 // IsKeyPressed checks if a specific key is pressed in the Table.

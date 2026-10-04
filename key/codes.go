@@ -74,16 +74,3 @@ func Parse(name string) (Code, error) {
 	}
 	return Invalid, fmt.Errorf("%w: %q", ErrUnknownKey, name)
 }
-
-// ParseCodes converts key names to key codes, failing on the first unknown name.
-func ParseCodes(names ...string) ([]Code, error) {
-	codes := make([]Code, len(names))
-	for i, name := range names {
-		code, err := Parse(name)
-		if err != nil {
-			return nil, err
-		}
-		codes[i] = code
-	}
-	return codes, nil
-}

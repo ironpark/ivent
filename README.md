@@ -57,6 +57,18 @@ func main() {
 }
 ```
 
+### Modifier keys
+`key.Ctrl`, `key.Alt`, `key.Shift` and `key.Super` (aliases `key.Option`, `key.Cmd`, `key.Win`) match either the
+left or the right key. Use `key.LeftCtrl`, `key.RightCtrl`, ... (or `"RightCtrl"` in strings) to require a specific side.
+
+```go
+// Fires for both Left Ctrl+Shift+A and Right Ctrl+Shift+A
+comb, err := ivent.ParseComb("Ctrl+Shift+A", func() { fmt.Println("hit") })
+```
+
+Key combinations can also be parsed and printed on their own with `key.ParseCombo` / `Combo.String()`.
+The `+` key itself is written as `Ctrl++`.
+
 ## TODO
 - [ ] More options for key combinations
 - [x] Generate key-code table `key/codes.go` using `go:generate`
