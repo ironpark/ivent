@@ -1,6 +1,6 @@
 {
   "Mac": {
-    "Codes":[
+    "Codes": [
       {
         "Category": "Alphabet",
         "Names": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
@@ -24,16 +24,8 @@
       },
       {
         "Category": "Modifier",
-        "Names": [
-          "LeftShift", "LeftCtrl", "LeftAlt", "LeftSuper",
-          "RightShift", "RightCtrl", "RightAlt", "RightSuper",
-          "CapsLock", "Fn"
-        ],
-        "Codes": [
-          "0x38", "0x3B", "0x3A", "0x37",
-          "0x3C", "0x3E", "0x3D", "0x36",
-          "0x39", "0x3F"
-        ]
+        "Names": ["LeftShift", "LeftCtrl", "LeftAlt", "LeftSuper", "RightShift", "RightCtrl", "RightAlt", "RightSuper", "CapsLock", "Fn"],
+        "Codes": ["0x38", "0x3B", "0x3A", "0x37", "0x3C", "0x3E", "0x3D", "0x36", "0x39", "0x3F"]
       },
       {
         "Category": "Navigation",
@@ -59,13 +51,23 @@
       {
         "Category": "Keypad Extra",
         "Prefix": "Pad",
-        "Names": ["Plus", "Minus", "Asterisk", "Slash", "Enter"],
-        "Codes": ["0x45", "0x4E", "0x43", "0x4B", "0x4C"]
+        "Names": ["Plus", "Minus", "Asterisk", "Slash", "Enter", "Decimal", "Equals", "Clear"],
+        "Codes": ["0x45", "0x4E", "0x43", "0x4B", "0x4C", "0x41", "0x51", "0x47"]
+      },
+      {
+        "Category": "Media",
+        "Names": ["VolumeUp", "VolumeDown", "Mute"],
+        "Codes": ["0x48", "0x49", "0x4A"]
+      },
+      {
+        "Category": "Mouse",
+        "Names": ["MouseLeft", "MouseRight", "MouseMiddle", "MouseX1", "MouseX2"],
+        "Codes": ["0xF9", "0xFA", "0xFB", "0xFC", "0xFD"]
       }
     ]
   },
   "Windows": {
-    "Codes":[
+    "Codes": [
       {
         "Category": "Alphabet",
         "Names": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
@@ -89,16 +91,8 @@
       },
       {
         "Category": "Modifier",
-        "Names": [
-          "LeftShift", "LeftCtrl", "LeftAlt", "LeftSuper",
-          "RightShift", "RightCtrl", "RightAlt", "RightSuper",
-          "CapsLock"
-        ],
-        "Codes": [
-          "0xA0", "0xA2", "0xA4", "0x5B",
-          "0xA1", "0xA3", "0xA5", "0x5C",
-          "0x14"
-        ]
+        "Names": ["LeftShift", "LeftCtrl", "LeftAlt", "LeftSuper", "RightShift", "RightCtrl", "RightAlt", "RightSuper", "CapsLock"],
+        "Codes": ["0xA0", "0xA2", "0xA4", "0x5B", "0xA1", "0xA3", "0xA5", "0x5C", "0x14"]
       },
       {
         "Category": "Navigation",
@@ -124,8 +118,95 @@
       {
         "Category": "Keypad Extra",
         "Prefix": "Pad",
-        "Names": ["Plus", "Minus", "Asterisk", "Slash"],
-        "Codes": ["0x6B", "0x6D", "0x6A", "0x6F"]
+        "Names": ["Plus", "Minus", "Asterisk", "Slash", "Decimal"],
+        "Codes": ["0x6B", "0x6D", "0x6A", "0x6F", "0x6E"]
+      },
+      {
+        "Category": "System",
+        "Names": ["PrintScreen", "ScrollLock", "Pause", "NumLock", "Menu"],
+        "Codes": ["0x2C", "0x91", "0x13", "0x90", "0x5D"]
+      },
+      {
+        "Category": "Media",
+        "Names": ["VolumeUp", "VolumeDown", "Mute", "MediaNext", "MediaPrev", "MediaStop", "MediaPlayPause"],
+        "Codes": ["0xAF", "0xAE", "0xAD", "0xB0", "0xB1", "0xB2", "0xB3"]
+      },
+      {
+        "Category": "Mouse",
+        "Names": ["MouseLeft", "MouseRight", "MouseMiddle", "MouseX1", "MouseX2"],
+        "Codes": ["0x01", "0x02", "0x04", "0x05", "0x06"]
+      }
+    ]
+  },
+  "Linux": {
+    "Codes": [
+      {
+        "Category": "Alphabet",
+        "Names": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
+        "Codes": ["0x1E", "0x30", "0x2E", "0x20", "0x12", "0x21", "0x22", "0x23", "0x17", "0x24", "0x25", "0x26", "0x32", "0x31", "0x18", "0x19", "0x10", "0x13", "0x1F", "0x14", "0x16", "0x2F", "0x11", "0x2D", "0x15", "0x2C"]
+      },
+      {
+        "Category": "Extra Keys",
+        "Names": ["Grave", "Minus", "Equal", "LeftBracket", "RightBracket", "Backslash", "Semicolon", "Quote", "Comma", "Dot", "Slash"],
+        "Codes": ["0x29", "0x0C", "0x0D", "0x1A", "0x1B", "0x2B", "0x27", "0x28", "0x33", "0x34", "0x35"]
+      },
+      {
+        "Category": "Number",
+        "Prefix": "Num",
+        "Names": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        "Codes": ["0x0B", "0x02", "0x03", "0x04", "0x05", "0x06", "0x07", "0x08", "0x09", "0x0A"]
+      },
+      {
+        "Category": "Function",
+        "Names": ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "F16", "F17", "F18", "F19", "F20"],
+        "Codes": ["0x3B", "0x3C", "0x3D", "0x3E", "0x3F", "0x40", "0x41", "0x42", "0x43", "0x44", "0x57", "0x58", "0xB7", "0xB8", "0xB9", "0xBA", "0xBB", "0xBC", "0xBD", "0xBE"]
+      },
+      {
+        "Category": "Modifier",
+        "Names": ["LeftShift", "LeftCtrl", "LeftAlt", "LeftSuper", "RightShift", "RightCtrl", "RightAlt", "RightSuper", "CapsLock"],
+        "Codes": ["0x2A", "0x1D", "0x38", "0x7D", "0x36", "0x61", "0x64", "0x7E", "0x3A"]
+      },
+      {
+        "Category": "Navigation",
+        "Names": ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"],
+        "Codes": ["0x67", "0x6C", "0x69", "0x6A", "0x66", "0x6B", "0x68", "0x6D"]
+      },
+      {
+        "Category": "Editing",
+        "Names": ["Backspace", "Delete", "Insert", "Enter"],
+        "Codes": ["0x0E", "0x6F", "0x6E", "0x1C"]
+      },
+      {
+        "Category": "Special",
+        "Names": ["ESC", "SpaceBar", "Tab"],
+        "Codes": ["0x01", "0x39", "0x0F"]
+      },
+      {
+        "Category": "Keypad",
+        "Prefix": "Pad",
+        "Names": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        "Codes": ["0x52", "0x4F", "0x50", "0x51", "0x4B", "0x4C", "0x4D", "0x47", "0x48", "0x49"]
+      },
+      {
+        "Category": "Keypad Extra",
+        "Prefix": "Pad",
+        "Names": ["Plus", "Minus", "Asterisk", "Slash", "Enter", "Decimal", "Equals"],
+        "Codes": ["0x4E", "0x4A", "0x37", "0x62", "0x60", "0x53", "0x75"]
+      },
+      {
+        "Category": "System",
+        "Names": ["PrintScreen", "ScrollLock", "Pause", "NumLock", "Menu"],
+        "Codes": ["0x63", "0x46", "0x77", "0x45", "0x7F"]
+      },
+      {
+        "Category": "Media",
+        "Names": ["VolumeUp", "VolumeDown", "Mute", "MediaNext", "MediaPrev", "MediaStop", "MediaPlayPause"],
+        "Codes": ["0x73", "0x72", "0x71", "0xA3", "0xA5", "0xA6", "0xA4"]
+      },
+      {
+        "Category": "Mouse",
+        "Names": ["MouseLeft", "MouseRight", "MouseMiddle", "MouseX1", "MouseX2"],
+        "Codes": ["0xF9", "0xFA", "0xFB", "0xFC", "0xFD"]
       }
     ]
   },
@@ -139,7 +220,21 @@
     "RightBracket": ["}", "]"],
     "Backslash": ["|", "\\"],
     "Minus": ["_", "-"],
-    "Equal": ["+", "="],
-    "Tilde": ["~", "`"]
+    "Equal": ["Plus", "+", "="],
+    "Grave": ["Tilde", "~", "`"],
+    "SpaceBar": ["Space"],
+    "ESC": ["Escape"],
+    "Enter": ["Return"],
+    "Delete": ["Del"],
+    "ArrowUp": ["Up"],
+    "ArrowDown": ["Down"],
+    "ArrowLeft": ["Left"],
+    "ArrowRight": ["Right"],
+    "LeftSuper": ["LeftCmd", "LeftWin", "LeftMeta"],
+    "RightSuper": ["RightCmd", "RightWin", "RightMeta"],
+    "LeftAlt": ["LeftOption"],
+    "RightAlt": ["RightOption"],
+    "LeftCtrl": ["LeftControl"],
+    "RightCtrl": ["RightControl"]
   }
 }

@@ -1,0 +1,27 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Check generated key tables
+        if: matrix.os == 'macos-latest'
+        run: |
+          go generate ./key
+          git diff --exit-code
+      - run: go vet ./...
+      - run: go test -race ./...
+      - run: go build ./examples/...

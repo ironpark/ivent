@@ -1,6 +1,6 @@
 package key
 
-import "fmt"
+import "strings"
 
 // Table represents a table of key states.
 // It consists of four 64-bit integers, each bit representing a specific key.
@@ -44,17 +44,19 @@ func (kpt *Table) Set(code Code, down bool) bool {
 	return kpt[i] != old
 }
 
+// String returns the pressed keys joined by "+", such as "LEFTCTRL+A".
 func (kpt Table) String() string {
-	str := ""
-	for _, code := range kpt.PressedKeys() {
-		str += fmt.Sprintf("[%d:%s] ", code, code.Name())
-	}
-	return str
+	return strings.Join(Names(kpt.PressedKeys()...), "+")
+}
+
+// Combo returns the pressed keys as a Combo of physical keys.
+func (kpt Table) Combo() Combo {
+	return Combo{keys: kpt}
 }
 
 // Eq checks if two Tables are equal.
 func (kpt Table) Eq(other Table) bool {
-	return kpt[0] == other[0] && kpt[1] == other[1] && kpt[2] == other[2] && kpt[3] == other[3]
+	return kpt == other
 }
 
 // IsSubsetOf checks if the current Table is a subset of another Table.
@@ -84,16 +86,6 @@ func (kpt Table) without(other Table) Table {
 func (kpt Table) IsKeyPressed(keycode Code) bool {
 	i, mask, ok := slot(keycode)
 	return ok && kpt[i]&mask != 0
-}
-
-// CheckKeyCombination checks if all the specified key codes are pressed in the Table.
-func (kpt Table) CheckKeyCombination(keyCodes ...Code) bool {
-	for _, key := range keyCodes {
-		if !kpt.IsKeyPressed(key) {
-			return false
-		}
-	}
-	return true
 }
 
 // PressedKeys returns a list of all pressed keys in the Table.

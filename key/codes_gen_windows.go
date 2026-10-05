@@ -33,11 +33,43 @@ const (
 	Pad0, Pad1, Pad2, Pad3, Pad4, Pad5, Pad6, Pad7, Pad8, Pad9 = Code(0x60), Code(0x61), Code(0x62), Code(0x63), Code(0x64), Code(0x65), Code(0x66), Code(0x67), Code(0x68), Code(0x69)
 
 	// Keypad Extra
-	PadPlus, PadMinus, PadAsterisk, PadSlash = Code(0x6B), Code(0x6D), Code(0x6A), Code(0x6F)
+	PadPlus, PadMinus, PadAsterisk, PadSlash, PadDecimal = Code(0x6B), Code(0x6D), Code(0x6A), Code(0x6F), Code(0x6E)
+
+	// System
+	PrintScreen, ScrollLock, Pause, NumLock, Menu = Code(0x2C), Code(0x91), Code(0x13), Code(0x90), Code(0x5D)
+
+	// Media
+	VolumeUp, VolumeDown, Mute, MediaNext, MediaPrev, MediaStop, MediaPlayPause = Code(0xAF), Code(0xAE), Code(0xAD), Code(0xB0), Code(0xB1), Code(0xB2), Code(0xB3)
+
+	// Mouse
+	MouseLeft, MouseRight, MouseMiddle, MouseX1, MouseX2 = Code(0x01), Code(0x02), Code(0x04), Code(0x05), Code(0x06)
+
+	// Not available on this platform
+	Fn, PadEnter, PadEquals, PadClear = Invalid, Invalid, Invalid, Invalid
 
 	// KeyCode Aliases
 
+	Tilde        = Grave
+	Plus         = Equal
 	QuestionMark = Slash
+	LeftControl  = LeftCtrl
+	LeftOption   = LeftAlt
+	LeftCmd      = LeftSuper
+	LeftWin      = LeftSuper
+	LeftMeta     = LeftSuper
+	RightControl = RightCtrl
+	RightOption  = RightAlt
+	RightCmd     = RightSuper
+	RightWin     = RightSuper
+	RightMeta    = RightSuper
+	Up           = ArrowUp
+	Down         = ArrowDown
+	Left         = ArrowLeft
+	Right        = ArrowRight
+	Del          = Delete
+	Return       = Enter
+	Escape       = ESC
+	Space        = SpaceBar
 )
 
 var (
@@ -51,7 +83,25 @@ var (
 		Backspace: "BACKSPACE", Delete: "DELETE", Insert: "INSERT", Enter: "ENTER",
 		ESC: "ESC", SpaceBar: "SPACEBAR", Tab: "TAB",
 		Pad0: "PAD0", Pad1: "PAD1", Pad2: "PAD2", Pad3: "PAD3", Pad4: "PAD4", Pad5: "PAD5", Pad6: "PAD6", Pad7: "PAD7", Pad8: "PAD8", Pad9: "PAD9",
-		PadPlus: "PADPLUS", PadMinus: "PADMINUS", PadAsterisk: "PADASTERISK", PadSlash: "PADSLASH",
+		PadPlus: "PADPLUS", PadMinus: "PADMINUS", PadAsterisk: "PADASTERISK", PadSlash: "PADSLASH", PadDecimal: "PADDECIMAL",
+		PrintScreen: "PRINTSCREEN", ScrollLock: "SCROLLLOCK", Pause: "PAUSE", NumLock: "NUMLOCK", Menu: "MENU",
+		VolumeUp: "VOLUMEUP", VolumeDown: "VOLUMEDOWN", Mute: "MUTE", MediaNext: "MEDIANEXT", MediaPrev: "MEDIAPREV", MediaStop: "MEDIASTOP", MediaPlayPause: "MEDIAPLAYPAUSE",
+		MouseLeft: "MOUSELEFT", MouseRight: "MOUSERIGHT", MouseMiddle: "MOUSEMIDDLE", MouseX1: "MOUSEX1", MouseX2: "MOUSEX2",
+	}
+	codeToDisplay = map[Code]string{
+		A: "A", B: "B", C: "C", D: "D", E: "E", F: "F", G: "G", H: "H", I: "I", J: "J", K: "K", L: "L", M: "M", N: "N", O: "O", P: "P", Q: "Q", R: "R", S: "S", T: "T", U: "U", V: "V", W: "W", X: "X", Y: "Y", Z: "Z",
+		Grave: "Grave", Minus: "Minus", Equal: "Equal", LeftBracket: "LeftBracket", RightBracket: "RightBracket", Backslash: "Backslash", Semicolon: "Semicolon", Quote: "Quote", Comma: "Comma", Dot: "Dot", Slash: "Slash",
+		Num0: "Num0", Num1: "Num1", Num2: "Num2", Num3: "Num3", Num4: "Num4", Num5: "Num5", Num6: "Num6", Num7: "Num7", Num8: "Num8", Num9: "Num9",
+		F1: "F1", F2: "F2", F3: "F3", F4: "F4", F5: "F5", F6: "F6", F7: "F7", F8: "F8", F9: "F9", F10: "F10", F11: "F11", F12: "F12", F13: "F13", F14: "F14", F15: "F15", F16: "F16", F17: "F17", F18: "F18", F19: "F19", F20: "F20",
+		LeftShift: "LeftShift", LeftCtrl: "LeftCtrl", LeftAlt: "LeftAlt", LeftSuper: "LeftSuper", RightShift: "RightShift", RightCtrl: "RightCtrl", RightAlt: "RightAlt", RightSuper: "RightSuper", CapsLock: "CapsLock",
+		ArrowUp: "ArrowUp", ArrowDown: "ArrowDown", ArrowLeft: "ArrowLeft", ArrowRight: "ArrowRight", Home: "Home", End: "End", PageUp: "PageUp", PageDown: "PageDown",
+		Backspace: "Backspace", Delete: "Delete", Insert: "Insert", Enter: "Enter",
+		ESC: "ESC", SpaceBar: "SpaceBar", Tab: "Tab",
+		Pad0: "Pad0", Pad1: "Pad1", Pad2: "Pad2", Pad3: "Pad3", Pad4: "Pad4", Pad5: "Pad5", Pad6: "Pad6", Pad7: "Pad7", Pad8: "Pad8", Pad9: "Pad9",
+		PadPlus: "PadPlus", PadMinus: "PadMinus", PadAsterisk: "PadAsterisk", PadSlash: "PadSlash", PadDecimal: "PadDecimal",
+		PrintScreen: "PrintScreen", ScrollLock: "ScrollLock", Pause: "Pause", NumLock: "NumLock", Menu: "Menu",
+		VolumeUp: "VolumeUp", VolumeDown: "VolumeDown", Mute: "Mute", MediaNext: "MediaNext", MediaPrev: "MediaPrev", MediaStop: "MediaStop", MediaPlayPause: "MediaPlayPause",
+		MouseLeft: "MouseLeft", MouseRight: "MouseRight", MouseMiddle: "MouseMiddle", MouseX1: "MouseX1", MouseX2: "MouseX2",
 	}
 	nameToCode = map[string]Code{
 		"A": A, "B": B, "C": C, "D": D, "E": E, "F": F, "G": G, "H": H, "I": I, "J": J, "K": K, "L": L, "M": M, "N": N, "O": O, "P": P, "Q": Q, "R": R, "S": S, "T": T, "U": U, "V": V, "W": W, "X": X, "Y": Y, "Z": Z,
@@ -63,10 +113,14 @@ var (
 		"BACKSPACE": Backspace, "DELETE": Delete, "INSERT": Insert, "ENTER": Enter,
 		"ESC": ESC, "SPACEBAR": SpaceBar, "TAB": Tab,
 		"PAD0": Pad0, "PAD1": Pad1, "PAD2": Pad2, "PAD3": Pad3, "PAD4": Pad4, "PAD5": Pad5, "PAD6": Pad6, "PAD7": Pad7, "PAD8": Pad8, "PAD9": Pad9,
-		"PADPLUS": PadPlus, "PADMINUS": PadMinus, "PADASTERISK": PadAsterisk, "PADSLASH": PadSlash,
+		"PADPLUS": PadPlus, "PADMINUS": PadMinus, "PADASTERISK": PadAsterisk, "PADSLASH": PadSlash, "PADDECIMAL": PadDecimal,
+		"PRINTSCREEN": PrintScreen, "SCROLLLOCK": ScrollLock, "PAUSE": Pause, "NUMLOCK": NumLock, "MENU": Menu,
+		"VOLUMEUP": VolumeUp, "VOLUMEDOWN": VolumeDown, "MUTE": Mute, "MEDIANEXT": MediaNext, "MEDIAPREV": MediaPrev, "MEDIASTOP": MediaStop, "MEDIAPLAYPAUSE": MediaPlayPause,
+		"MOUSELEFT": MouseLeft, "MOUSERIGHT": MouseRight, "MOUSEMIDDLE": MouseMiddle, "MOUSEX1": MouseX1, "MOUSEX2": MouseX2,
 		// KeyCode Aliases
+		"TILDE": Grave, "~": Grave, "`": Grave,
 		"_": Minus, "-": Minus,
-		"+": Equal, "=": Equal,
+		"PLUS": Equal, "+": Equal, "=": Equal,
 		"{": LeftBracket, "[": LeftBracket,
 		"}": RightBracket, "]": RightBracket,
 		"|": Backslash, "\\": Backslash,
@@ -75,5 +129,19 @@ var (
 		"<": Comma, ",": Comma,
 		">": Dot, ".": Dot,
 		"QUESTIONMARK": Slash, "?": Slash, "/": Slash,
+		"LEFTCONTROL": LeftCtrl,
+		"LEFTOPTION":  LeftAlt,
+		"LEFTCMD":     LeftSuper, "LEFTWIN": LeftSuper, "LEFTMETA": LeftSuper,
+		"RIGHTCONTROL": RightCtrl,
+		"RIGHTOPTION":  RightAlt,
+		"RIGHTCMD":     RightSuper, "RIGHTWIN": RightSuper, "RIGHTMETA": RightSuper,
+		"UP":     ArrowUp,
+		"DOWN":   ArrowDown,
+		"LEFT":   ArrowLeft,
+		"RIGHT":  ArrowRight,
+		"DEL":    Delete,
+		"RETURN": Enter,
+		"ESCAPE": ESC,
+		"SPACE":  SpaceBar,
 	}
 )

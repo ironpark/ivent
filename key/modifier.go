@@ -37,13 +37,32 @@ func init() {
 		codeToName[code] = m.name
 		nameToCode[m.name] = code
 	}
-	nameToCode["OPTION"] = Option
-	nameToCode["CMD"] = Cmd
-	nameToCode["WIN"] = Win
+	for name, code := range map[string]Code{
+		"CONTROL": Ctrl, "OPTION": Option, "OPT": Option, "CMD": Cmd, "COMMAND": Cmd, "WIN": Win, "META": Super,
+	} {
+		nameToCode[name] = code
+	}
 }
 
 // modifierIndex returns the index of a side-independent modifier in modifiers, and false if code is not one.
 func modifierIndex(code Code) (int, bool) {
 	i := int(code - tableSize)
 	return i, i >= 0 && i < len(modifiers)
+}
+
+// IsModifier reports whether code is a modifier key: a side-independent modifier such as Ctrl,
+// one of its physical keys such as LeftCtrl, or Fn.
+func IsModifier(code Code) bool {
+	if _, _, ok := modifierInfo(code); ok {
+		return true
+	}
+	return code == Fn && Known(Fn)
+}
+
+// Physical returns the left key for a side-independent modifier, and code itself otherwise.
+func Physical(code Code) Code {
+	if i, ok := modifierIndex(code); ok {
+		return modifiers[i].left
+	}
+	return code
 }

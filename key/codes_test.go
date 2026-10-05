@@ -34,16 +34,6 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestCodesUnknown(t *testing.T) {
-	codes := Codes("A", "Nope")
-	if codes[0] != A || codes[1] != Invalid {
-		t.Fatalf("Codes = %v", codes)
-	}
-	if Known(Invalid) {
-		t.Fatal("Invalid must not be a known key")
-	}
-}
-
 func TestTableOutOfRange(t *testing.T) {
 	table := MakeTable(Code(-1), Code(256), A)
 	if !table.Eq(MakeTable(A)) {

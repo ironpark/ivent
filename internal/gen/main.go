@@ -27,16 +27,16 @@ func (k KeyCodes) NameWithPrefix() (names []string) {
 }
 func (k KeyCodes) Split() (KeyCodes, KeyCodes) {
 	return KeyCodes{
-			Category: k.Category,
-			Prefix:   k.Prefix,
-			Codes:    k.Codes[:len(k.Names)/2],
-			Names:    k.Names[:len(k.Names)/2],
-		}, KeyCodes{
-			Category: k.Category,
-			Prefix:   k.Prefix,
-			Codes:    k.Codes[len(k.Names)/2:],
-			Names:    k.Names[len(k.Names)/2:],
-		}
+		Category: k.Category,
+		Prefix:   k.Prefix,
+		Codes:    k.Codes[:len(k.Names)/2],
+		Names:    k.Names[:len(k.Names)/2],
+	}, KeyCodes{
+		Category: k.Category,
+		Prefix:   k.Prefix,
+		Codes:    k.Codes[len(k.Names)/2:],
+		Names:    k.Names[len(k.Names)/2:],
+	}
 }
 
 type OsSpecificConfig struct {
@@ -46,7 +46,24 @@ type OsSpecificConfig struct {
 type KeyCodeConfig struct {
 	Mac     OsSpecificConfig
 	Windows OsSpecificConfig
+	Linux   OsSpecificConfig
 	Alias   map[string][]string
+}
+
+// allNames returns the key names of every platform, in order of first appearance.
+func (c KeyCodeConfig) allNames() (names []string) {
+	seen := map[string]bool{}
+	for _, os := range []OsSpecificConfig{c.Mac, c.Windows, c.Linux} {
+		for _, keyCodes := range os.Codes {
+			for _, name := range keyCodes.NameWithPrefix() {
+				if !seen[name] {
+					seen[name] = true
+					names = append(names, name)
+				}
+			}
+		}
+	}
+	return names
 }
 
 func genConst(keyCodes KeyCodes) (constList string) {
@@ -60,7 +77,7 @@ func genConst(keyCodes KeyCodes) (constList string) {
 	return
 }
 
-func gen(config OsSpecificConfig, alias map[string][]string, filename string) {
+func gen(config OsSpecificConfig, alias map[string][]string, allNames []string, filename string) {
 	list := config.Codes
 	alias = maps.Clone(alias)
 	// Merge aliases
@@ -81,6 +98,23 @@ func gen(config OsSpecificConfig, alias map[string][]string, filename string) {
 				constList += genConst(b)
 			}
 		}
+	}
+	// Keys that only exist on other platforms are defined as Invalid, so code using them still compiles.
+	defined := map[string]bool{}
+	for _, keyCodes := range list {
+		for _, name := range keyCodes.NameWithPrefix() {
+			defined[name] = true
+		}
+	}
+	var missing []string
+	for _, name := range allNames {
+		if !defined[name] {
+			missing = append(missing, name)
+		}
+	}
+	if len(missing) > 0 {
+		constList += "\n\t// Not available on this platform\n"
+		constList += "\t" + strings.Join(missing, ", ") + " = " + strings.TrimSuffix(strings.Repeat("Invalid, ", len(missing)), ", ") + "\n"
 	}
 	constList += "\n// KeyCode Aliases\n\n"
 
@@ -107,6 +141,16 @@ func gen(config OsSpecificConfig, alias map[string][]string, filename string) {
 		names := keyCodes.NameWithPrefix()
 		for i, name := range names {
 			names[i] = fmt.Sprintf("%s:\"%s\"", name, strings.ToUpper(name))
+		}
+		varList += "\t\t" + strings.Join(names, ",") + ","
+		varList += "\n"
+	}
+	varList += "\t}\n"
+	varList += "\tcodeToDisplay = map[Code]string{\n"
+	for _, keyCodes := range list {
+		names := keyCodes.NameWithPrefix()
+		for i, name := range names {
+			names[i] = fmt.Sprintf("%s:\"%s\"", name, name)
 		}
 		varList += "\t\t" + strings.Join(names, ",") + ","
 		varList += "\n"
@@ -167,6 +211,8 @@ func main() {
 		panic(err)
 	}
 
-	gen(config.Mac, config.Alias, "./codes_gen_darwin.go")
-	gen(config.Windows, config.Alias, "./codes_gen_windows.go")
+	allNames := config.allNames()
+	gen(config.Mac, config.Alias, allNames, "./codes_gen_darwin.go")
+	gen(config.Windows, config.Alias, allNames, "./codes_gen_windows.go")
+	gen(config.Linux, config.Alias, allNames, "./codes_gen_linux.go")
 }

@@ -9,8 +9,8 @@ import (
 
 type Code int
 
-// Invalid is returned by Codes for names that cannot be resolved.
-// It is never reported by the OS hook, so a combination containing it never matches.
+// Invalid stands for a key that does not exist: an unresolved name, or a key that the current
+// platform does not have (such as Fn on Windows). It is never reported, so a combination containing it never matches.
 const Invalid = Code(0xFF)
 
 // ErrUnknownKey is returned when a key name cannot be resolved to a key code.
@@ -24,6 +24,24 @@ func (k Code) Name() string {
 func Known(code Code) bool {
 	_, ok := codeToName[code]
 	return ok
+}
+
+// MouseButtons lists the mouse buttons in the order the OS numbers them (left, right, middle, extra 1, extra 2).
+var MouseButtons = [...]Code{MouseLeft, MouseRight, MouseMiddle, MouseX1, MouseX2}
+
+// IsMouseButton reports whether code is a mouse button.
+func IsMouseButton(code Code) bool {
+	for _, button := range MouseButtons {
+		if code == button {
+			return true
+		}
+	}
+	return false
+}
+
+// IsKeypad reports whether code is a numeric keypad key.
+func IsKeypad(code Code) bool {
+	return strings.HasPrefix(codeToDisplay[code], "Pad")
 }
 
 func Name(code Code) string {
@@ -42,20 +60,6 @@ func Names(codes ...Code) []string {
 		names[i] = Name(code)
 	}
 	return names
-}
-
-// Codes converts a slice of key names to a slice of key codes.
-// Names that cannot be resolved are converted to Invalid. Use Parse to detect them.
-func Codes(names ...string) []Code {
-	codes := make([]Code, len(names))
-	for i, name := range names {
-		code, err := Parse(name)
-		if err != nil {
-			code = Invalid
-		}
-		codes[i] = code
-	}
-	return codes
 }
 
 // Parse converts a key name to a key code.

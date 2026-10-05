@@ -88,3 +88,33 @@ func TestModifierNames(t *testing.T) {
 		}
 	}
 }
+
+func TestParseSequence(t *testing.T) {
+	steps, err := ParseSequence("Ctrl+K  Ctrl+C")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(steps) != 2 || steps[0] != NewCombo(Ctrl, K) || steps[1] != NewCombo(Ctrl, C) {
+		t.Fatalf("ParseSequence = %v", steps)
+	}
+	for _, in := range []string{"", "  ", "Ctrl+K Nope"} {
+		if _, err := ParseSequence(in); err == nil {
+			t.Errorf("ParseSequence(%q) expected error", in)
+		}
+	}
+}
+
+func TestCovers(t *testing.T) {
+	c := NewCombo(Ctrl, C)
+	for _, state := range []Table{{}, MakeTable(LeftCtrl), MakeTable(RightCtrl, C)} {
+		if !c.Covers(state) {
+			t.Errorf("Covers(%v) = false", state)
+		}
+	}
+	if c.Covers(MakeTable(LeftShift)) || c.Covers(MakeTable(LeftCtrl, A)) {
+		t.Error("keys outside the combination must not be covered")
+	}
+	if Physical(Ctrl) != LeftCtrl || Physical(A) != A {
+		t.Fatal("Physical")
+	}
+}

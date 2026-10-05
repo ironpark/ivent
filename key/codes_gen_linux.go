@@ -3,46 +3,49 @@ package key
 
 const (
 	// Alphabet
-	A, B, C, D, E, F, G, H, I, J, K, L, M = Code(0x00), Code(0x0B), Code(0x08), Code(0x02), Code(0x0E), Code(0x03), Code(0x05), Code(0x04), Code(0x22), Code(0x26), Code(0x28), Code(0x25), Code(0x2E)
-	N, O, P, Q, R, S, T, U, V, W, X, Y, Z = Code(0x2D), Code(0x1F), Code(0x23), Code(0x0C), Code(0x0F), Code(0x01), Code(0x11), Code(0x20), Code(0x09), Code(0x0D), Code(0x07), Code(0x10), Code(0x06)
+	A, B, C, D, E, F, G, H, I, J, K, L, M = Code(0x1E), Code(0x30), Code(0x2E), Code(0x20), Code(0x12), Code(0x21), Code(0x22), Code(0x23), Code(0x17), Code(0x24), Code(0x25), Code(0x26), Code(0x32)
+	N, O, P, Q, R, S, T, U, V, W, X, Y, Z = Code(0x31), Code(0x18), Code(0x19), Code(0x10), Code(0x13), Code(0x1F), Code(0x14), Code(0x16), Code(0x2F), Code(0x11), Code(0x2D), Code(0x15), Code(0x2C)
 
 	// Extra Keys
-	Grave, Minus, Equal, LeftBracket, RightBracket = Code(0x32), Code(0x1B), Code(0x18), Code(0x21), Code(0x1E)
-	Backslash, Semicolon, Quote, Comma, Dot, Slash = Code(0x2A), Code(0x29), Code(0x27), Code(0x2B), Code(0x2F), Code(0x2C)
+	Grave, Minus, Equal, LeftBracket, RightBracket = Code(0x29), Code(0x0C), Code(0x0D), Code(0x1A), Code(0x1B)
+	Backslash, Semicolon, Quote, Comma, Dot, Slash = Code(0x2B), Code(0x27), Code(0x28), Code(0x33), Code(0x34), Code(0x35)
 
 	// Number
-	Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9 = Code(0x1D), Code(0x12), Code(0x13), Code(0x14), Code(0x15), Code(0x17), Code(0x16), Code(0x1A), Code(0x1C), Code(0x19)
+	Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8, Num9 = Code(0x0B), Code(0x02), Code(0x03), Code(0x04), Code(0x05), Code(0x06), Code(0x07), Code(0x08), Code(0x09), Code(0x0A)
 
 	// Function
-	F1, F2, F3, F4, F5, F6, F7, F8, F9, F10          = Code(0x7A), Code(0x78), Code(0x63), Code(0x76), Code(0x60), Code(0x61), Code(0x62), Code(0x64), Code(0x65), Code(0x6D)
-	F11, F12, F13, F14, F15, F16, F17, F18, F19, F20 = Code(0x67), Code(0x6F), Code(0x69), Code(0x6B), Code(0x71), Code(0x6A), Code(0x40), Code(0x4F), Code(0x50), Code(0x5A)
+	F1, F2, F3, F4, F5, F6, F7, F8, F9, F10          = Code(0x3B), Code(0x3C), Code(0x3D), Code(0x3E), Code(0x3F), Code(0x40), Code(0x41), Code(0x42), Code(0x43), Code(0x44)
+	F11, F12, F13, F14, F15, F16, F17, F18, F19, F20 = Code(0x57), Code(0x58), Code(0xB7), Code(0xB8), Code(0xB9), Code(0xBA), Code(0xBB), Code(0xBC), Code(0xBD), Code(0xBE)
 
 	// Modifier
-	LeftShift, LeftCtrl, LeftAlt, LeftSuper, RightShift, RightCtrl, RightAlt, RightSuper, CapsLock, Fn = Code(0x38), Code(0x3B), Code(0x3A), Code(0x37), Code(0x3C), Code(0x3E), Code(0x3D), Code(0x36), Code(0x39), Code(0x3F)
+	LeftShift, LeftCtrl, LeftAlt, LeftSuper, RightShift, RightCtrl, RightAlt, RightSuper, CapsLock = Code(0x2A), Code(0x1D), Code(0x38), Code(0x7D), Code(0x36), Code(0x61), Code(0x64), Code(0x7E), Code(0x3A)
 
 	// Navigation
-	ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Home, End, PageUp, PageDown = Code(0x7E), Code(0x7D), Code(0x7B), Code(0x7C), Code(0x73), Code(0x77), Code(0x74), Code(0x79)
+	ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Home, End, PageUp, PageDown = Code(0x67), Code(0x6C), Code(0x69), Code(0x6A), Code(0x66), Code(0x6B), Code(0x68), Code(0x6D)
 
 	// Editing
-	Backspace, Delete, Insert, Enter = Code(0x33), Code(0x75), Code(0x72), Code(0x24)
+	Backspace, Delete, Insert, Enter = Code(0x0E), Code(0x6F), Code(0x6E), Code(0x1C)
 
 	// Special
-	ESC, SpaceBar, Tab = Code(0x35), Code(0x31), Code(0x30)
+	ESC, SpaceBar, Tab = Code(0x01), Code(0x39), Code(0x0F)
 
 	// Keypad
-	Pad0, Pad1, Pad2, Pad3, Pad4, Pad5, Pad6, Pad7, Pad8, Pad9 = Code(0x52), Code(0x53), Code(0x54), Code(0x55), Code(0x56), Code(0x57), Code(0x58), Code(0x59), Code(0x5B), Code(0x5C)
+	Pad0, Pad1, Pad2, Pad3, Pad4, Pad5, Pad6, Pad7, Pad8, Pad9 = Code(0x52), Code(0x4F), Code(0x50), Code(0x51), Code(0x4B), Code(0x4C), Code(0x4D), Code(0x47), Code(0x48), Code(0x49)
 
 	// Keypad Extra
-	PadPlus, PadMinus, PadAsterisk, PadSlash, PadEnter, PadDecimal, PadEquals, PadClear = Code(0x45), Code(0x4E), Code(0x43), Code(0x4B), Code(0x4C), Code(0x41), Code(0x51), Code(0x47)
+	PadPlus, PadMinus, PadAsterisk, PadSlash, PadEnter, PadDecimal, PadEquals = Code(0x4E), Code(0x4A), Code(0x37), Code(0x62), Code(0x60), Code(0x53), Code(0x75)
+
+	// System
+	PrintScreen, ScrollLock, Pause, NumLock, Menu = Code(0x63), Code(0x46), Code(0x77), Code(0x45), Code(0x7F)
 
 	// Media
-	VolumeUp, VolumeDown, Mute = Code(0x48), Code(0x49), Code(0x4A)
+	VolumeUp, VolumeDown, Mute, MediaNext, MediaPrev, MediaStop, MediaPlayPause = Code(0x73), Code(0x72), Code(0x71), Code(0xA3), Code(0xA5), Code(0xA6), Code(0xA4)
 
 	// Mouse
 	MouseLeft, MouseRight, MouseMiddle, MouseX1, MouseX2 = Code(0xF9), Code(0xFA), Code(0xFB), Code(0xFC), Code(0xFD)
 
 	// Not available on this platform
-	PrintScreen, ScrollLock, Pause, NumLock, Menu, MediaNext, MediaPrev, MediaStop, MediaPlayPause = Invalid, Invalid, Invalid, Invalid, Invalid, Invalid, Invalid, Invalid, Invalid
+	Fn, PadClear = Invalid, Invalid
 
 	// KeyCode Aliases
 
@@ -75,13 +78,14 @@ var (
 		Grave: "GRAVE", Minus: "MINUS", Equal: "EQUAL", LeftBracket: "LEFTBRACKET", RightBracket: "RIGHTBRACKET", Backslash: "BACKSLASH", Semicolon: "SEMICOLON", Quote: "QUOTE", Comma: "COMMA", Dot: "DOT", Slash: "SLASH",
 		Num0: "NUM0", Num1: "NUM1", Num2: "NUM2", Num3: "NUM3", Num4: "NUM4", Num5: "NUM5", Num6: "NUM6", Num7: "NUM7", Num8: "NUM8", Num9: "NUM9",
 		F1: "F1", F2: "F2", F3: "F3", F4: "F4", F5: "F5", F6: "F6", F7: "F7", F8: "F8", F9: "F9", F10: "F10", F11: "F11", F12: "F12", F13: "F13", F14: "F14", F15: "F15", F16: "F16", F17: "F17", F18: "F18", F19: "F19", F20: "F20",
-		LeftShift: "LEFTSHIFT", LeftCtrl: "LEFTCTRL", LeftAlt: "LEFTALT", LeftSuper: "LEFTSUPER", RightShift: "RIGHTSHIFT", RightCtrl: "RIGHTCTRL", RightAlt: "RIGHTALT", RightSuper: "RIGHTSUPER", CapsLock: "CAPSLOCK", Fn: "FN",
+		LeftShift: "LEFTSHIFT", LeftCtrl: "LEFTCTRL", LeftAlt: "LEFTALT", LeftSuper: "LEFTSUPER", RightShift: "RIGHTSHIFT", RightCtrl: "RIGHTCTRL", RightAlt: "RIGHTALT", RightSuper: "RIGHTSUPER", CapsLock: "CAPSLOCK",
 		ArrowUp: "ARROWUP", ArrowDown: "ARROWDOWN", ArrowLeft: "ARROWLEFT", ArrowRight: "ARROWRIGHT", Home: "HOME", End: "END", PageUp: "PAGEUP", PageDown: "PAGEDOWN",
 		Backspace: "BACKSPACE", Delete: "DELETE", Insert: "INSERT", Enter: "ENTER",
 		ESC: "ESC", SpaceBar: "SPACEBAR", Tab: "TAB",
 		Pad0: "PAD0", Pad1: "PAD1", Pad2: "PAD2", Pad3: "PAD3", Pad4: "PAD4", Pad5: "PAD5", Pad6: "PAD6", Pad7: "PAD7", Pad8: "PAD8", Pad9: "PAD9",
-		PadPlus: "PADPLUS", PadMinus: "PADMINUS", PadAsterisk: "PADASTERISK", PadSlash: "PADSLASH", PadEnter: "PADENTER", PadDecimal: "PADDECIMAL", PadEquals: "PADEQUALS", PadClear: "PADCLEAR",
-		VolumeUp: "VOLUMEUP", VolumeDown: "VOLUMEDOWN", Mute: "MUTE",
+		PadPlus: "PADPLUS", PadMinus: "PADMINUS", PadAsterisk: "PADASTERISK", PadSlash: "PADSLASH", PadEnter: "PADENTER", PadDecimal: "PADDECIMAL", PadEquals: "PADEQUALS",
+		PrintScreen: "PRINTSCREEN", ScrollLock: "SCROLLLOCK", Pause: "PAUSE", NumLock: "NUMLOCK", Menu: "MENU",
+		VolumeUp: "VOLUMEUP", VolumeDown: "VOLUMEDOWN", Mute: "MUTE", MediaNext: "MEDIANEXT", MediaPrev: "MEDIAPREV", MediaStop: "MEDIASTOP", MediaPlayPause: "MEDIAPLAYPAUSE",
 		MouseLeft: "MOUSELEFT", MouseRight: "MOUSERIGHT", MouseMiddle: "MOUSEMIDDLE", MouseX1: "MOUSEX1", MouseX2: "MOUSEX2",
 	}
 	codeToDisplay = map[Code]string{
@@ -89,13 +93,14 @@ var (
 		Grave: "Grave", Minus: "Minus", Equal: "Equal", LeftBracket: "LeftBracket", RightBracket: "RightBracket", Backslash: "Backslash", Semicolon: "Semicolon", Quote: "Quote", Comma: "Comma", Dot: "Dot", Slash: "Slash",
 		Num0: "Num0", Num1: "Num1", Num2: "Num2", Num3: "Num3", Num4: "Num4", Num5: "Num5", Num6: "Num6", Num7: "Num7", Num8: "Num8", Num9: "Num9",
 		F1: "F1", F2: "F2", F3: "F3", F4: "F4", F5: "F5", F6: "F6", F7: "F7", F8: "F8", F9: "F9", F10: "F10", F11: "F11", F12: "F12", F13: "F13", F14: "F14", F15: "F15", F16: "F16", F17: "F17", F18: "F18", F19: "F19", F20: "F20",
-		LeftShift: "LeftShift", LeftCtrl: "LeftCtrl", LeftAlt: "LeftAlt", LeftSuper: "LeftSuper", RightShift: "RightShift", RightCtrl: "RightCtrl", RightAlt: "RightAlt", RightSuper: "RightSuper", CapsLock: "CapsLock", Fn: "Fn",
+		LeftShift: "LeftShift", LeftCtrl: "LeftCtrl", LeftAlt: "LeftAlt", LeftSuper: "LeftSuper", RightShift: "RightShift", RightCtrl: "RightCtrl", RightAlt: "RightAlt", RightSuper: "RightSuper", CapsLock: "CapsLock",
 		ArrowUp: "ArrowUp", ArrowDown: "ArrowDown", ArrowLeft: "ArrowLeft", ArrowRight: "ArrowRight", Home: "Home", End: "End", PageUp: "PageUp", PageDown: "PageDown",
 		Backspace: "Backspace", Delete: "Delete", Insert: "Insert", Enter: "Enter",
 		ESC: "ESC", SpaceBar: "SpaceBar", Tab: "Tab",
 		Pad0: "Pad0", Pad1: "Pad1", Pad2: "Pad2", Pad3: "Pad3", Pad4: "Pad4", Pad5: "Pad5", Pad6: "Pad6", Pad7: "Pad7", Pad8: "Pad8", Pad9: "Pad9",
-		PadPlus: "PadPlus", PadMinus: "PadMinus", PadAsterisk: "PadAsterisk", PadSlash: "PadSlash", PadEnter: "PadEnter", PadDecimal: "PadDecimal", PadEquals: "PadEquals", PadClear: "PadClear",
-		VolumeUp: "VolumeUp", VolumeDown: "VolumeDown", Mute: "Mute",
+		PadPlus: "PadPlus", PadMinus: "PadMinus", PadAsterisk: "PadAsterisk", PadSlash: "PadSlash", PadEnter: "PadEnter", PadDecimal: "PadDecimal", PadEquals: "PadEquals",
+		PrintScreen: "PrintScreen", ScrollLock: "ScrollLock", Pause: "Pause", NumLock: "NumLock", Menu: "Menu",
+		VolumeUp: "VolumeUp", VolumeDown: "VolumeDown", Mute: "Mute", MediaNext: "MediaNext", MediaPrev: "MediaPrev", MediaStop: "MediaStop", MediaPlayPause: "MediaPlayPause",
 		MouseLeft: "MouseLeft", MouseRight: "MouseRight", MouseMiddle: "MouseMiddle", MouseX1: "MouseX1", MouseX2: "MouseX2",
 	}
 	nameToCode = map[string]Code{
@@ -103,13 +108,14 @@ var (
 		"GRAVE": Grave, "MINUS": Minus, "EQUAL": Equal, "LEFTBRACKET": LeftBracket, "RIGHTBRACKET": RightBracket, "BACKSLASH": Backslash, "SEMICOLON": Semicolon, "QUOTE": Quote, "COMMA": Comma, "DOT": Dot, "SLASH": Slash,
 		"NUM0": Num0, "NUM1": Num1, "NUM2": Num2, "NUM3": Num3, "NUM4": Num4, "NUM5": Num5, "NUM6": Num6, "NUM7": Num7, "NUM8": Num8, "NUM9": Num9,
 		"F1": F1, "F2": F2, "F3": F3, "F4": F4, "F5": F5, "F6": F6, "F7": F7, "F8": F8, "F9": F9, "F10": F10, "F11": F11, "F12": F12, "F13": F13, "F14": F14, "F15": F15, "F16": F16, "F17": F17, "F18": F18, "F19": F19, "F20": F20,
-		"LEFTSHIFT": LeftShift, "LEFTCTRL": LeftCtrl, "LEFTALT": LeftAlt, "LEFTSUPER": LeftSuper, "RIGHTSHIFT": RightShift, "RIGHTCTRL": RightCtrl, "RIGHTALT": RightAlt, "RIGHTSUPER": RightSuper, "CAPSLOCK": CapsLock, "FN": Fn,
+		"LEFTSHIFT": LeftShift, "LEFTCTRL": LeftCtrl, "LEFTALT": LeftAlt, "LEFTSUPER": LeftSuper, "RIGHTSHIFT": RightShift, "RIGHTCTRL": RightCtrl, "RIGHTALT": RightAlt, "RIGHTSUPER": RightSuper, "CAPSLOCK": CapsLock,
 		"ARROWUP": ArrowUp, "ARROWDOWN": ArrowDown, "ARROWLEFT": ArrowLeft, "ARROWRIGHT": ArrowRight, "HOME": Home, "END": End, "PAGEUP": PageUp, "PAGEDOWN": PageDown,
 		"BACKSPACE": Backspace, "DELETE": Delete, "INSERT": Insert, "ENTER": Enter,
 		"ESC": ESC, "SPACEBAR": SpaceBar, "TAB": Tab,
 		"PAD0": Pad0, "PAD1": Pad1, "PAD2": Pad2, "PAD3": Pad3, "PAD4": Pad4, "PAD5": Pad5, "PAD6": Pad6, "PAD7": Pad7, "PAD8": Pad8, "PAD9": Pad9,
-		"PADPLUS": PadPlus, "PADMINUS": PadMinus, "PADASTERISK": PadAsterisk, "PADSLASH": PadSlash, "PADENTER": PadEnter, "PADDECIMAL": PadDecimal, "PADEQUALS": PadEquals, "PADCLEAR": PadClear,
-		"VOLUMEUP": VolumeUp, "VOLUMEDOWN": VolumeDown, "MUTE": Mute,
+		"PADPLUS": PadPlus, "PADMINUS": PadMinus, "PADASTERISK": PadAsterisk, "PADSLASH": PadSlash, "PADENTER": PadEnter, "PADDECIMAL": PadDecimal, "PADEQUALS": PadEquals,
+		"PRINTSCREEN": PrintScreen, "SCROLLLOCK": ScrollLock, "PAUSE": Pause, "NUMLOCK": NumLock, "MENU": Menu,
+		"VOLUMEUP": VolumeUp, "VOLUMEDOWN": VolumeDown, "MUTE": Mute, "MEDIANEXT": MediaNext, "MEDIAPREV": MediaPrev, "MEDIASTOP": MediaStop, "MEDIAPLAYPAUSE": MediaPlayPause,
 		"MOUSELEFT": MouseLeft, "MOUSERIGHT": MouseRight, "MOUSEMIDDLE": MouseMiddle, "MOUSEX1": MouseX1, "MOUSEX2": MouseX2,
 		// KeyCode Aliases
 		"TILDE": Grave, "~": Grave, "`": Grave,

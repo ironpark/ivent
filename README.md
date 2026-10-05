@@ -2,80 +2,141 @@
     <img src="./assets/images/ivent.png" width="256">
 </p>
 
-Simple input event hook library for golang
+Global keyboard and mouse hook library for Go: hotkeys, sequences, double taps, holds,
+per-application bindings, shortcut recording, event blocking and key sending.
 
 ## Warning
-- This package is in a very early stage and may undergo breaking changes.
-- Currently supports macOS and Windows. Linux support is planned.
-- On macOS, the process needs Accessibility (or Input Monitoring) permission.
+- This package is in an early stage and may undergo breaking changes.
+- Supported platforms: macOS, Windows and Linux (see [Platform notes](#platform-notes)).
 
-## Usage
+## Install
 ```bash
 go get github.com/ironpark/ivent
 ```
 
+## Usage
 ```go
 package main
 
 import (
 	"context"
 	"fmt"
-	"github.com/ironpark/ivent"
-	"github.com/ironpark/ivent/key"
+	"log"
+	"os"
+	"os/signal"
 	"time"
+
+	"github.com/ironpark/ivent"
 )
 
-
 func main() {
-	// Create a context with a 10-second timeout
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+	h := ivent.New()
 
-	// Register key combinations with their respective callbacks
-	ivent.Register(
-		// Q+W+E combination
-		ivent.NewComb([]key.Code{key.Q, key.W, key.E}, func() {
-			fmt.Println("QWE")
-		}),
-		// A+S+D combination from string (unknown key names never match; use ivent.ParseComb to get an error)
-		ivent.NewCombFromStr("A+S+D", func() {
-			fmt.Println("ASD")
-		}),
-		// AllowOtherInputs: if true, allows other inputs after the key combination
-		// For example, if you press this key combination, it also allows Z+X+C + <any keys>
-		ivent.NewComb([]key.Code{key.Z, key.X, key.C}, func() {
-			fmt.Println("ZXC")
-		}, ivent.AllowOtherInputs),
-	)
+	// Left or right Ctrl + Shift + A
+	h.Bind("Ctrl+Shift+A", func(e ivent.Event) {
+		fmt.Println("Ctrl+Shift+A in", e.App().Name)
+	})
+	// Sequence (VS Code style chord)
+	h.Bind("Ctrl+K Ctrl+C", func(ivent.Event) { fmt.Println("chord") })
+	// Shift pressed twice quickly
+	h.Bind("Shift", func(ivent.Event) { fmt.Println("double Shift") }, ivent.DoubleTap(300*time.Millisecond))
 
-	// Start listening for input events with the given context.
-	// Callbacks are invoked on this goroutine; Start blocks until ctx is done.
-	if err := ivent.Start(ctx); err != nil {
-		// ivent.ErrHookFailed: e.g. missing Accessibility permission on macOS
-		fmt.Println(err)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	// Blocks until ctx is done. Callbacks run one at a time on a goroutine owned by Run.
+	if err := h.Run(ctx); err != nil {
+		log.Fatal(err) // ivent.ErrHookFailed: e.g. missing permission on macOS
 	}
 }
 ```
 
-### Modifier keys
-`key.Ctrl`, `key.Alt`, `key.Shift` and `key.Super` (aliases `key.Option`, `key.Cmd`, `key.Win`) match either the
-left or the right key. Use `key.LeftCtrl`, `key.RightCtrl`, ... (or `"RightCtrl"` in strings) to require a specific side.
+More in [`examples/`](./examples): `hotkey` shows every binding option, `logger` prints raw events.
 
+### Bindings
+`Bind` parses a combination (`"Ctrl+Shift+A"`, spaces around `+` are fine) or a space-separated sequence
+(`"Ctrl+K Ctrl+C"`) and returns a function that removes the binding. `BindCombo` / `BindSequence` take
+`key.Combo` values. Invalid option combinations return `ErrInvalidBinding`, and binding the same input twice
+returns `ErrDuplicateBinding`. `Bindings()` lists what is registered.
+
+| Option | Effect |
+|---|---|
+| (default) | Fires when exactly the keys of the combination are held |
+| `Contains()` | Also fires when other keys are held too |
+| `Repeat()` | Also fires on auto-repeat |
+| `OnRelease()` | Fires on release if no other key was pressed meanwhile (e.g. tap `Cmd` alone) |
+| `DoubleTap(d)` | Fires when the combination is pressed twice within `d` |
+| `Hold(d)` | Fires once the combination has been held for `d` |
+| `Suppress()` | Blocks the triggering key so other apps never see it |
+| `OnlyApps(...)` / `ExceptApps(...)` | Restricts by focused app name, bundle ID or executable |
+| `ByCharacter()` | Resolves `"Z"`, `"/"`, ... by the current keyboard layout instead of US key positions |
+| `Async()` | Runs the callback on its own goroutine instead of the shared, ordered one |
+| `SequenceTimeout(d)` | Longest pause between the steps of a sequence (default 2s) |
+
+In a sequence, trigger options such as `Hold` or `DoubleTap` apply to the last step.
+
+### Recording shortcuts and pausing
 ```go
-// Fires for both Left Ctrl+Shift+A and Right Ctrl+Shift+A
-comb, err := ivent.ParseComb("Ctrl+Shift+A", func() { fmt.Println("hit") })
+combo, err := h.Record(ctx)     // waits for the user to press a combination, e.g. in a settings screen
+fmt.Println(combo.Display())     // "⌃⇧A" on macOS, "Ctrl+Shift+A" elsewhere
+h.BindCombo(combo, fn)
+
+h.Pause()                        // stop all bindings (e.g. while a game is focused)
+h.Resume()
 ```
 
-Key combinations can also be parsed and printed on their own with `key.ParseCombo` / `Combo.String()`.
-The `+` key itself is written as `Ctrl++`.
+### Keys and modifiers
+- `Ctrl`, `Alt`, `Shift` and `Super` (also `Control`, `Option`, `Cmd`, `Command`, `Win`, `Meta`) match either the
+  left or the right key. Use `LeftCtrl`, `RightCmd`, ... to require a side.
+- Mouse buttons are keys too: `"Ctrl+MouseLeft"`.
+- Key names describe physical key **positions** on a US layout (on AZERTY, `"A"` is the key labelled Q),
+  unless the binding uses `ByCharacter()`.
+- `key.ParseCombo` / `Combo.String()` convert combinations to and from text; `Combo.Display()` /
+  `Combo.Format(style)` produce text for people. Write the `+` key as `Plus` (or `Ctrl++`).
+- Keys that do not exist on a platform (such as `key.Fn` on Windows) compile everywhere and never match.
+
+### Testing your bindings
+`iventtest` drives a `Hook` with simulated input, without an OS hook or permissions:
+```go
+h := ivent.New()
+h.Bind("Ctrl+K Ctrl+C", comment)
+sim := iventtest.New(h)
+sim.Type("Ctrl+K Ctrl+C")
+sim.Flush() // runs the callbacks
+```
+
+### Raw events, sending and permissions
+```go
+for e := range h.Events() { ... }                 // every key, button, move and wheel event
+ivent.SendString("Cmd+C")                         // send a key combination (not on Linux)
+ivent.WaitForPermission(ctx, ivent.Permission{Monitor: true, Control: true}) // ask and wait (macOS)
+```
+
+### Options
+| Option | Effect |
+|---|---|
+| `WithInjected()` | Also processes input synthesized by other software (ignored by default) |
+| `WithoutMouse()` | Listens to the keyboard only |
+| `WithBuffer(n)` | Pending callback / event buffer size (default 256) |
+| `WithWarnings(fn)` | Receives `ErrCannotSuppress` / `ErrCallbacksDropped` (logged with `log/slog` by default) |
+
+## Platform notes
+| | macOS | Windows | Linux |
+|---|---|---|---|
+| Listen | Input Monitoring permission | ✓ | root or `input` group (evdev) |
+| `Suppress` | Accessibility permission | ✓ | ✗ |
+| `Send` | Accessibility permission | ✓ | ✗ |
+| `ByCharacter` | ✓ | ✓ | ✗ (US positions) |
+| Mouse position | ✓ | ✓ | ✗ (buttons and wheel only) |
+| `Event.App`, `OnlyApps` | ✓ | ✓ | ✗ |
+| Stuck key recovery | ✓ | ✓ | ✗ |
+
+- Blocking is enabled automatically when possible; `Hook.CanSuppress` tells whether it is, and a warning is
+  reported for `Suppress` bindings that cannot block.
+- On macOS, Input Monitoring usually takes effect only after the process restarts; Accessibility applies at once.
+- Missed key releases (secure input, sleep, a disabled event tap) are recovered by checking the OS key state.
+- On Windows, the fake Left Ctrl sent by AltGr is ignored, so AltGr does not trigger `Ctrl+Alt` bindings.
+- Detection of synthesized input is a heuristic on macOS.
 
 ## TODO
-- [ ] More options for key combinations
-- [x] Generate key-code table `key/codes.go` using `go:generate`
-    - [x] Alias Support
-    - [ ] Add windows,linux key-code config in `key/keycode.json` file
-- [ ] Add alias for key codes (e.g. `RightBracket` -> `}`) 
-- [ ] Add Support mouse events
-- [ ] Implement key event triggering
-- [x] Add support for Windows
-- [ ] Add support for Linux
+- [ ] Sending keys and blocking events on Linux (uinput), X11 / Wayland backends
+- [ ] Sending mouse events
