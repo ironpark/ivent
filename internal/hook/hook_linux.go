@@ -245,21 +245,14 @@ func readDevice(d *device) {
 func handleInput(typ, code uint16, value int32, flags uint8) (suppress bool) {
 	switch {
 	case typ == evKey && code >= btnLeft && code <= btnExtra:
-		return dispatch(Event{Kind: keyKind(value), Code: key.MouseButtons[code-btnLeft], Flags: flags})
+		return dispatch(Event{Kind: keyKind(value != 0), Code: key.MouseButtons[code-btnLeft], Flags: flags})
 	case typ == evKey && code < 256:
 		// value is 0 for release, 1 for press and 2 for auto-repeat.
-		return dispatch(Event{Kind: keyKind(value), Code: key.Code(code), Flags: flags})
+		return dispatch(Event{Kind: keyKind(value != 0), Code: key.Code(code), Flags: flags})
 	case typ == evRel && code == relWheel:
 		return dispatch(Event{Kind: MouseWheel, Delta: value, Flags: flags})
 	}
 	return false
-}
-
-func keyKind(value int32) Kind {
-	if value == 0 {
-		return KeyUp
-	}
-	return KeyDown
 }
 
 func anyKeyHeld(f *os.File) bool {
@@ -269,9 +262,8 @@ func anyKeyHeld(f *os.File) bool {
 
 // evdevCode converts a key code to its Linux event code.
 func evdevCode(code key.Code) uint16 {
-	if key.IsMouseButton(code) {
-		// Both the mouse button codes and BTN_LEFT ... BTN_EXTRA are consecutive.
-		return btnLeft + uint16(code-key.MouseLeft)
+	if i, ok := mouseButton(code); ok {
+		return btnLeft + uint16(i)
 	}
 	return uint16(code)
 }

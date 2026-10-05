@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"runtime"
+	"slices"
 	"sync/atomic"
 
 	"github.com/ironpark/ivent/key"
@@ -34,6 +35,10 @@ const (
 	FlagInjected = 1 << iota // synthesized by software rather than a physical device
 	FlagOwn                  // sent by this process with Send
 )
+
+// ownEventTag marks events sent by Send (in the event's user data), so they are reported with FlagOwn
+// when they come back through the hook. It fits in 32 bits for 32-bit Windows.
+const ownEventTag = 0x69766E74
 
 // Event is a raw input event reported by the OS hook.
 type Event struct {
@@ -123,6 +128,21 @@ func Run(ctx context.Context, cfg Config, h Handler) error {
 	case err := <-done:
 		return err
 	}
+}
+
+// keyKind returns KeyDown for a press and KeyUp for a release.
+func keyKind(down bool) Kind {
+	if down {
+		return KeyDown
+	}
+	return KeyUp
+}
+
+// mouseButton returns the OS number of a mouse button (0 left, 1 right, 2 middle, 3-4 extra),
+// the index of code in key.MouseButtons.
+func mouseButton(code key.Code) (int, bool) {
+	i := slices.Index(key.MouseButtons[:], code)
+	return i, i >= 0
 }
 
 func dispatch(ev Event) bool {

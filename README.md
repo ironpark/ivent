@@ -13,6 +13,7 @@ per-application bindings, shortcut recording, event blocking and key sending.
 ```bash
 go get github.com/ironpark/ivent
 ```
+Requires Go 1.24 or later.
 
 ## Usage
 ```go
@@ -132,6 +133,8 @@ ivent.WaitForPermission(ctx, ivent.Permission{Monitor: true, Control: true}) // 
 | Stuck key recovery | ✓ | ✓ | ✓ |
 | Keyboards plugged in later | ✓ | ✓ | ✓ |
 
+- No cgo is needed on any platform: `CGO_ENABLED=0` builds and cross-compiling work (macOS calls the system
+  frameworks through [purego](https://github.com/ebitengine/purego)).
 - Blocking is enabled automatically when possible; `Hook.CanSuppress` tells whether it is, and a warning is
   reported for `Suppress` bindings that cannot block.
 - On macOS, Input Monitoring usually takes effect only after the process restarts; Accessibility applies at once.
