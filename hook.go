@@ -23,7 +23,7 @@ var (
 // Warnings passed to the WithWarnings handler.
 var (
 	// ErrCannotSuppress means a binding uses Suppress, but the running hook cannot block events.
-	ErrCannotSuppress = errors.New("ivent: cannot block events (needs Accessibility permission on macOS; not supported on Linux)")
+	ErrCannotSuppress = errors.New("ivent: cannot block events (needs Accessibility permission on macOS, WithExclusive and /dev/uinput access on Linux)")
 	// ErrCallbacksDropped means callbacks were dropped because the buffer was full (see Async and WithBuffer).
 	ErrCallbacksDropped = errors.New("ivent: callbacks dropped")
 )
@@ -70,19 +70,29 @@ func (c call) run() {
 }
 
 type config struct {
-	mouse    bool
-	injected bool
-	buffer   int
-	warn     func(error)
+	mouse     bool
+	injected  bool
+	exclusive bool
+	buffer    int
+	warn      func(error)
 }
 
 // Option configures a Hook.
 type Option func(*config)
 
 // WithInjected delivers events synthesized by software (other than this process's Send) as well.
-// By default they are ignored.
+// By default they are ignored. On Linux, input from any virtual device counts as synthesized,
+// including remappers such as keyd that pass the keyboard through a virtual device.
 func WithInjected() Option {
 	return func(c *config) { c.injected = true }
+}
+
+// WithExclusive lets Suppress block keys on Linux. Physical keyboards are grabbed, so that only this
+// process receives their input, and every key that is not blocked is passed on through a virtual
+// uinput device. This needs write access to /dev/uinput. If the process stops responding while
+// running, keyboards stop working until it exits. Ignored on macOS and Windows.
+func WithExclusive() Option {
+	return func(c *config) { c.exclusive = true }
 }
 
 // WithoutMouse stops listening to the mouse.
@@ -142,7 +152,7 @@ func (h *Hook) Run(ctx context.Context) error {
 			}
 		}
 	}()
-	cfg := hook.Config{Keyboard: true, Mouse: h.cfg.mouse, OnReady: h.ready}
+	cfg := hook.Config{Keyboard: true, Mouse: h.cfg.mouse, Exclusive: h.cfg.exclusive, OnReady: h.ready}
 	err := hook.Run(ctx, cfg, adapter{h})
 	h.mu.Lock()
 	h.running = false
@@ -167,7 +177,8 @@ func (h *Hook) ready(canSuppress bool) {
 }
 
 // CanSuppress reports whether the running hook can block events for Suppress bindings:
-// always on Windows, on macOS with Accessibility permission, never on Linux.
+// always on Windows, on macOS with Accessibility permission, and on Linux with WithExclusive
+// (keyboards only).
 func (h *Hook) CanSuppress() bool {
 	return h.canSuppress()
 }

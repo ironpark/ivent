@@ -107,7 +107,7 @@ sim.Flush() // runs the callbacks
 ### Raw events, sending and permissions
 ```go
 for e := range h.Events() { ... }                 // every key, button, move and wheel event
-ivent.SendString("Cmd+C")                         // send a key combination (not on Linux)
+ivent.SendString("Cmd+C")                         // send a key combination
 ivent.WaitForPermission(ctx, ivent.Permission{Monitor: true, Control: true}) // ask and wait (macOS)
 ```
 
@@ -115,6 +115,7 @@ ivent.WaitForPermission(ctx, ivent.Permission{Monitor: true, Control: true}) // 
 | Option | Effect |
 |---|---|
 | `WithInjected()` | Also processes input synthesized by other software (ignored by default) |
+| `WithExclusive()` | Linux: grabs keyboards so `Suppress` can block keys (see [Platform notes](#platform-notes)) |
 | `WithoutMouse()` | Listens to the keyboard only |
 | `WithBuffer(n)` | Pending callback / event buffer size (default 256) |
 | `WithWarnings(fn)` | Receives `ErrCannotSuppress` / `ErrCallbacksDropped` (logged with `log/slog` by default) |
@@ -123,20 +124,29 @@ ivent.WaitForPermission(ctx, ivent.Permission{Monitor: true, Control: true}) // 
 | | macOS | Windows | Linux |
 |---|---|---|---|
 | Listen | Input Monitoring permission | ✓ | root or `input` group (evdev) |
-| `Suppress` | Accessibility permission | ✓ | ✗ |
-| `Send` | Accessibility permission | ✓ | ✗ |
+| `Suppress` | Accessibility permission | ✓ | `WithExclusive()` + `/dev/uinput`, keyboards only |
+| `Send` | Accessibility permission | ✓ | `/dev/uinput` write access |
 | `ByCharacter` | ✓ | ✓ | ✗ (US positions) |
 | Mouse position | ✓ | ✓ | ✗ (buttons and wheel only) |
 | `Event.App`, `OnlyApps` | ✓ | ✓ | ✗ |
-| Stuck key recovery | ✓ | ✓ | ✗ |
+| Stuck key recovery | ✓ | ✓ | ✓ |
+| Keyboards plugged in later | ✓ | ✓ | ✓ |
 
 - Blocking is enabled automatically when possible; `Hook.CanSuppress` tells whether it is, and a warning is
   reported for `Suppress` bindings that cannot block.
 - On macOS, Input Monitoring usually takes effect only after the process restarts; Accessibility applies at once.
 - Missed key releases (secure input, sleep, a disabled event tap) are recovered by checking the OS key state.
 - On Windows, the fake Left Ctrl sent by AltGr is ignored, so AltGr does not trigger `Ctrl+Alt` bindings.
-- Detection of synthesized input is a heuristic on macOS.
+- Detection of synthesized input is a heuristic on macOS. On Linux, input from any virtual device counts
+  as synthesized, including remappers such as keyd; use `WithInjected()` with them.
+- On Linux, `WithExclusive()` grabs physical keyboards so only this process receives their input, and
+  passes every key it does not block on through a virtual device (Caps Lock and other LEDs keep working).
+  A keyboard is grabbed once none of its keys is held. If the process stops responding, keyboards stop
+  working until it exits. The Linux backend reads evdev directly, so it works the same on X11, Wayland
+  and the console.
+- To use `/dev/uinput` without root, add a udev rule such as
+  `KERNEL=="uinput", GROUP="input", MODE="0660", OPTIONS+="static_node=uinput"` and load the `uinput` module.
 
 ## TODO
-- [ ] Sending keys and blocking events on Linux (uinput), X11 / Wayland backends
+- [ ] Mouse position, `Event.App` and `ByCharacter` on Linux (X11 / Wayland)
 - [ ] Sending mouse events

@@ -75,7 +75,7 @@ func Hold(d time.Duration) BindOption {
 // Suppress blocks the key press that triggers the binding (and its repeats and release),
 // so that other applications do not receive it. It cannot be combined with OnRelease or Hold,
 // whose keys have already been delivered. Blocking needs Accessibility permission on macOS and
-// is not supported on Linux; see Hook.CanSuppress.
+// WithExclusive on Linux; see Hook.CanSuppress.
 func Suppress() BindOption {
 	return func(b *binding) { b.suppress = true }
 }

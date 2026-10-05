@@ -31,7 +31,8 @@ func Record(ctx context.Context) (key.Combo, error) {
 type Permission struct {
 	// Monitor allows listening to input (Input Monitoring on macOS).
 	Monitor bool
-	// Control allows blocking input with Suppress and sending input (Accessibility on macOS).
+	// Control allows blocking input with Suppress and sending input (Accessibility on macOS,
+	// write access to /dev/uinput on Linux).
 	Control bool
 }
 

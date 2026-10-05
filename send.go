@@ -9,7 +9,8 @@ import (
 
 // Send presses the keys of the combination in order and releases them in reverse order.
 // Side-independent modifiers such as key.Ctrl are sent as their left key.
-// Events sent by this process never trigger its own bindings. Not supported on Linux.
+// Events sent by this process never trigger its own bindings. On Linux, keys are sent through a
+// virtual uinput device, which needs write access to /dev/uinput.
 func Send(c key.Combo) error {
 	codes := c.Codes()
 	for i, code := range codes {

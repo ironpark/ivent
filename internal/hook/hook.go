@@ -57,6 +57,8 @@ type Handler interface {
 type Config struct {
 	Keyboard bool
 	Mouse    bool
+	// Exclusive grabs keyboards on Linux so that events can be blocked. Ignored elsewhere.
+	Exclusive bool
 	// OnReady, if set, is called on the goroutine of Run once the hook is installed.
 	OnReady func(canSuppress bool)
 }
@@ -70,7 +72,7 @@ var (
 )
 
 // Suppressing reports whether the running hook can block events: always on Windows, on macOS when the
-// process has Accessibility permission, and never on Linux.
+// process has Accessibility permission, and on Linux when keyboards are grabbed (Config.Exclusive).
 func Suppressing() bool {
 	return running.Load() && suppressing.Load()
 }
